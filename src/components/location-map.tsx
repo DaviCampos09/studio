@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import type { ConditionLikelihoodForecastOutput } from '@/ai/flows/condition-likelihood-forecast';
 import { Skeleton } from './ui/skeleton';
+import { LatLngExpression } from 'leaflet';
 
 
 interface LocationMapProps {
@@ -34,30 +35,19 @@ const nasaLayers = {
     precipitation: { name: 'Precipitation (GPM)', url: 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi', params: { layers: 'GPM_3IMERGHHE_Precipitation' } },
 };
 
+function MapWrapper({ center, children }: { center: LatLngExpression, children: React.ReactNode }) {
+    return (
+        <MapContainer center={center} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+            {children}
+        </MapContainer>
+    );
+}
+
+
 export function LocationMap({ location, forecast, displayName }: LocationMapProps) {
-  const [isClient, setIsClient] = useState(false);
   const [activeLayer, setActiveLayer] = useState<keyof typeof nasaLayers>('none');
   const position = useMemo(() => parseCoordinates(location), [location]);
   
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const MapPlaceholder = () => (
-      <Card>
-        <CardHeader>
-            <CardTitle className="font-headline">Location Map</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <Skeleton className="h-48 w-full" />
-        </CardContent>
-      </Card>
-  );
-
-  if (!isClient) {
-    return <MapPlaceholder />;
-  }
-
   const currentLayer = nasaLayers[activeLayer];
 
   return (
@@ -87,7 +77,7 @@ export function LocationMap({ location, forecast, displayName }: LocationMapProp
       <CardContent>
         <div className="h-48 w-full rounded-md overflow-hidden">
           {position ? (
-            <MapContainer key={location} center={[position.lat, position.lng]} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+            <MapWrapper center={[position.lat, position.lng]}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -110,7 +100,7 @@ export function LocationMap({ location, forecast, displayName }: LocationMapProp
                   </Popup>
                 )}
               </Marker>
-            </MapContainer>
+            </MapWrapper>
           ) : (
             <div className="flex flex-col items-center justify-center text-center h-48">
               <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
