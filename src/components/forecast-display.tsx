@@ -12,15 +12,16 @@ const LocationMap = dynamic(() => import("./location-map").then(mod => mod.Locat
 interface ForecastDisplayProps {
   forecast: ConditionLikelihoodForecastOutput;
   location: string;
+  displayName: string;
 }
 
-export function ForecastDisplay({ forecast, location }: ForecastDisplayProps) {
+export function ForecastDisplay({ forecast, location, displayName }: ForecastDisplayProps) {
   return (
     <div className="space-y-6">
       <LikelihoodScores likelihoods={forecast.conditionLikelihoods} />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DetailedReport report={forecast.detailedReport} />
-        <LocationMap location={location} forecast={forecast} />
+        <LocationMap location={location} forecast={forecast} displayName={displayName} />
       </div>
     </div>
   );

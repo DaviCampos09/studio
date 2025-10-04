@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Loader2, Thermometer, Droplets, Wind, Settings2 } from "lucide-react";
+import { CalendarIcon, Loader2, Thermometer, Droplets, Wind, Settings2, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import React from 'react';
 
@@ -55,12 +55,15 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location (Coordinates)</FormLabel>
+                    <FormLabel className="flex items-center">
+                      <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
+                      Location
+                    </FormLabel>
                     <FormDescription>
-                      e.g., "40.71, -74.00"
+                      e.g., "New York, NY" or "Eiffel Tower"
                     </FormDescription>
                     <FormControl>
-                      <Input placeholder="Enter latitude, longitude" {...field} />
+                      <Input placeholder="Enter a city, address, or landmark" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

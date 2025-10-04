@@ -14,17 +14,21 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [forecast, setForecast] = useState<ConditionLikelihoodForecastOutput | null>(null);
   const [location, setLocation] = useState<string>("");
+  const [displayName, setDisplayName] = useState<string>("");
   const { toast } = useToast();
 
   const handleFormSubmit = async (data: ForecasterSchema) => {
     setIsLoading(true);
     setForecast(null);
-    setLocation(data.location);
+    setLocation("");
+    setDisplayName("");
 
     const result = await getForecast(data);
 
-    if (result.success && result.data) {
+    if (result.success && result.data && result.location && result.displayName) {
       setForecast(result.data);
+      setLocation(result.location);
+      setDisplayName(result.displayName);
     } else {
       toast({
         variant: "destructive",
@@ -86,7 +90,7 @@ export default function Home() {
         </div>
         <div className="lg:col-span-2">
           {isLoading && <LoadingSkeleton />}
-          {forecast && <ForecastDisplay forecast={forecast} location={location} />}
+          {forecast && <ForecastDisplay forecast={forecast} location={location} displayName={displayName} />}
           {!isLoading && !forecast && (
             <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px] bg-card rounded-lg border border-dashed p-8">
               <div className="p-4 bg-secondary rounded-full mb-4">

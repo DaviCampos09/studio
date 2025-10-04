@@ -6,43 +6,58 @@ import {
 } from '@/ai/flows/condition-likelihood-forecast';
 import type { ForecasterSchema } from '@/lib/schemas';
 
-const parseCoordinates = (location: string): { lat: number; lng: number } | null => {
-  const parts = location.split(',').map(s => s.trim());
-  if (parts.length === 2) {
-    const lat = parseFloat(parts[0]);
-    const lng = parseFloat(parts[1]);
-    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      return { lat, lng };
+// Adicionada função de geocodificação para converter nome de local em coordenadas
+async function geocodeLocation(location: string): Promise<{ lat: number; lon: number; name: string } | null> {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`;
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'OutdoorEventForecaster/1.0 (dev@example.com)' // API Nominatim requer um User-Agent
+      }
+    });
+    if (!response.ok) {
+      console.error(`Nominatim API error: ${response.statusText}`);
+      return null;
     }
+    const data = await response.json();
+    if (data && data.length > 0) {
+      return {
+        lat: parseFloat(data[0].lat),
+        lon: parseFloat(data[0].lon),
+        name: data[0].display_name,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Geocoding failed:', error);
+    return null;
   }
-  return null;
-};
+}
 
 export async function getForecast(data: ForecasterSchema) {
   try {
     const { date, time, temperature, humidity, windSpeed, location } = data;
 
-    const coords = parseCoordinates(location);
-    if (!coords) {
-      return { success: false, error: 'Invalid location format. Please use "latitude, longitude".' };
+    // Usar o serviço de geocodificação
+    const geocoded = await geocodeLocation(location);
+    if (!geocoded) {
+      return { success: false, error: `Could not find coordinates for "${location}". Please try a different location.` };
     }
 
     const dateTime = new Date(date);
     const [hours, minutes] = time.split(':').map(Number);
     dateTime.setHours(hours, minutes);
     
-    // Fetch weather data from Open-Meteo
-    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lng}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&start_date=${date.toISOString().split('T')[0]}&end_date=${date.toISOString().split('T')[0]}`;
+    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${geocoded.lat}&longitude=${geocoded.lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&start_date=${date.toISOString().split('T')[0]}&end_date=${date.toISOString().split('T')[0]}`;
     const weatherResponse = await fetch(weatherApiUrl);
     if (!weatherResponse.ok) {
         throw new Error(`Failed to fetch weather data: ${weatherResponse.statusText}`);
     }
     const weatherData = await weatherResponse.json();
 
-
     const input: ConditionLikelihoodForecastInput = {
-      latitude: coords.lat,
-      longitude: coords.lng,
+      latitude: geocoded.lat,
+      longitude: geocoded.lon,
       dateTime: dateTime.toISOString(),
       weatherData,
     };
@@ -62,7 +77,8 @@ export async function getForecast(data: ForecasterSchema) {
     }
     
     const result = await conditionLikelihoodForecast(input);
-    return { success: true, data: result };
+    // Retornar as coordenadas e nome encontrados para usar no front-end
+    return { success: true, data: result, location: `${geocoded.lat}, ${geocoded.lon}`, displayName: geocoded.name };
   } catch (error) {
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to get forecast. Please try again.';

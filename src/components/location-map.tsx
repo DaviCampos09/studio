@@ -11,6 +11,7 @@ import type { ConditionLikelihoodForecastOutput } from '@/ai/flows/condition-lik
 interface LocationMapProps {
   location: string;
   forecast: ConditionLikelihoodForecastOutput | null;
+  displayName: string;
 }
 
 const parseCoordinates = (location: string): { lat: number; lng: number } | null => {
@@ -31,7 +32,7 @@ const nasaLayers = {
     precipitation: { name: 'Precipitation (GPM)', url: 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi', params: { layers: 'GPM_3IMERGHHE_Precipitation' } },
 };
 
-export function LocationMap({ location, forecast }: LocationMapProps) {
+export function LocationMap({ location, forecast, displayName }: LocationMapProps) {
   const [isClient, setIsClient] = useState(false);
   const [activeLayer, setActiveLayer] = useState<keyof typeof nasaLayers>('none');
   const position = useMemo(() => parseCoordinates(location), [location]);
@@ -64,7 +65,7 @@ export function LocationMap({ location, forecast }: LocationMapProps) {
            <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
            <p className="text-muted-foreground">Could not display map.</p>
            <p className="text-xs text-muted-foreground mt-2">
-            Please provide location as "latitude, longitude" to see it on the map.
+            Enter a location in the form to see it on the map.
            </p>
         </CardContent>
       </Card>
@@ -76,10 +77,12 @@ export function LocationMap({ location, forecast }: LocationMapProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="font-headline">Location Map</CardTitle>
+        <div className='flex-1 overflow-hidden'>
+            <CardTitle className="font-headline truncate" title={displayName}>{displayName}</CardTitle>
+        </div>
          <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className='ml-4'>
                     <Layers className="mr-2 h-4 w-4" />
                     <span>Layers</span>
                 </Button>
@@ -97,7 +100,7 @@ export function LocationMap({ location, forecast }: LocationMapProps) {
       </CardHeader>
       <CardContent>
         <div className="h-48 w-full rounded-md overflow-hidden">
-          <MapContainer center={[position.lat, position.lng]} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+          <MapContainer key={location} center={[position.lat, position.lng]} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
