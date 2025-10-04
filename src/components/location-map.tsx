@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useMemo } from 'react';
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import React, { useMemo, useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, WMSTileLayer } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Layers } from 'lucide-react';
+import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import type { ConditionLikelihoodForecastOutput } from '@/ai/flows/condition-likelihood-forecast';
 
 interface LocationMapProps {
   location: string;
+  forecast: ConditionLikelihoodForecastOutput | null;
 }
 
 const parseCoordinates = (location: string): { lat: number; lng: number } | null => {
@@ -21,26 +25,33 @@ const parseCoordinates = (location: string): { lat: number; lng: number } | null
   return null;
 };
 
-export function LocationMap({ location }: LocationMapProps) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  
-  const position = useMemo(() => parseCoordinates(location), [location]);
+const nasaLayers = {
+    none: { name: 'None', url: '' },
+    clouds: { name: 'Clouds (GOES-East)', url: 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi', params: { layers: 'GOES-East_Full_Disk_Band_2_Red_Visible_1km' } },
+    precipitation: { name: 'Precipitation (GPM)', url: 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi', params: { layers: 'GPM_3IMERGHHE_Precipitation' } },
+};
 
-  if (!apiKey) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Location Map</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center text-center h-48">
-          <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">Map feature is unavailable.</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Google Maps API key is not configured.
-          </p>
-        </CardContent>
-      </Card>
-    );
+export function LocationMap({ location, forecast }: LocationMapProps) {
+  const [isClient, setIsClient] = useState(false);
+  const [activeLayer, setActiveLayer] = useState<keyof typeof nasaLayers>('none');
+  const position = useMemo(() => parseCoordinates(location), [location]);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+
+  if (!isClient) {
+      return (
+          <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Location Map</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="h-48 w-full rounded-md bg-muted animate-pulse" />
+            </CardContent>
+          </Card>
+      );
   }
 
   if (!position) {
@@ -59,25 +70,57 @@ export function LocationMap({ location }: LocationMapProps) {
       </Card>
     );
   }
+  
+  const currentLayer = nasaLayers[activeLayer];
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="font-headline">Location Map</CardTitle>
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                    <Layers className="mr-2 h-4 w-4" />
+                    <span>Layers</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>NASA GIBS Layers</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup value={activeLayer} onValueChange={(value) => setActiveLayer(value as keyof typeof nasaLayers)}>
+                    {Object.entries(nasaLayers).map(([key, layer]) => (
+                         <DropdownMenuRadioItem key={key} value={key}>{layer.name}</DropdownMenuRadioItem>
+                    ))}
+                </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+        </DropdownMenu>
       </CardHeader>
       <CardContent>
         <div className="h-48 w-full rounded-md overflow-hidden">
-          <APIProvider apiKey={apiKey}>
-            <Map
-              defaultCenter={position}
-              defaultZoom={10}
-              mapId="outdoor-event-map"
-              gestureHandling={'greedy'}
-              disableDefaultUI={true}
-            >
-              <AdvancedMarker position={position} />
-            </Map>
-          </APIProvider>
+          <MapContainer center={[position.lat, position.lng]} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {currentLayer.url && (
+                <WMSTileLayer
+                    url={currentLayer.url}
+                    params={{
+                        ...currentLayer.params,
+                        transparent: true,
+                        format: 'image/png',
+                    }}
+                />
+            )}
+            <Marker position={[position.lat, position.lng]}>
+              {forecast?.currentWeather && (
+                <Popup>
+                  Temperature: {forecast.currentWeather.temperature}°C <br />
+                  Humidity: {forecast.currentWeather.humidity}%
+                </Popup>
+              )}
+            </Marker>
+          </MapContainer>
         </div>
       </CardContent>
     </Card>

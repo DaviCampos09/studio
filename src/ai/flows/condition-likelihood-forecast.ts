@@ -12,12 +12,10 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ConditionLikelihoodForecastInputSchema = z.object({
-  location: z
-    .string()
-    .describe('The location for which to forecast conditions (e.g., coordinates or address).'),
-  dateTime: z
-    .string()
-    .describe('The specific date and time for the outdoor event (e.g., ISO date string).'),
+  latitude: z.number(),
+  longitude: z.number(),
+  dateTime: z.string().describe('The specific date and time for the outdoor event (e.g., ISO date string).'),
+  weatherData: z.any().describe('The weather data from Open-Meteo API.'),
   comfortThresholds: z
     .object({
       temperature: z.number().optional().describe('The temperature threshold for discomfort.'),
@@ -27,6 +25,7 @@ const ConditionLikelihoodForecastInputSchema = z.object({
     .optional()
     .describe('Customizable thresholds for personal comfort.'),
 });
+
 
 export type ConditionLikelihoodForecastInput = z.infer<
   typeof ConditionLikelihoodForecastInputSchema
@@ -42,8 +41,14 @@ const ConditionLikelihoodForecastOutputSchema = z.object({
       .number()
       .describe('Likelihood score (0-1) for generally uncomfortable conditions.'),
   }),
-  detailedReport: z.string().describe('A detailed report based on Earth Observation data.'),
+  detailedReport: z.string().describe('A detailed report based on the provided weather data.'),
+  currentWeather: z.object({
+    temperature: z.number(),
+    humidity: z.number(),
+    windSpeed: z.number(),
+  }),
 });
+
 
 export type ConditionLikelihoodForecastOutput = z.infer<
   typeof ConditionLikelihoodForecastOutputSchema
@@ -59,21 +64,27 @@ const prompt = ai.definePrompt({
   name: 'conditionLikelihoodForecastPrompt',
   input: {schema: ConditionLikelihoodForecastInputSchema},
   output: {schema: ConditionLikelihoodForecastOutputSchema},
-  prompt: `You are an AI assistant specialized in forecasting weather condition likelihoods for outdoor events.
+  prompt: `You are an AI assistant specialized in interpreting weather data to forecast condition likelihoods for outdoor events.
 
-You will receive a location, date, and time, and optional comfort thresholds.  Using this information, you will determine the likelihood of "very hot", "very cold", "very windy", "very humid", and "uncomfortable" conditions.
+You will receive weather data from the Open-Meteo API for a specific location and time, and optional user-defined comfort thresholds. Using this data, you must determine the likelihood (from 0.0 to 1.0) of the following adverse conditions: "very hot", "very cold", "very windy", and "very humid".
 
-Location: {{{location}}}
-Date/Time: {{{dateTime}}}
-Comfort Thresholds: {{{comfortThresholds}}}
+Additionally, you must calculate a general "uncomfortable" likelihood score. This score should be based on a combination of the weather data and the user's comfort thresholds if provided. For example, if the user sets a temperature threshold of 30°C and the forecast is 32°C, the "uncomfortable" score should increase.
 
-Consider weather observation Earth data sources and statistical weather forecasting models.
-Apply reasoning to synthesize and incorporate any given facts in your determination.  If the comfortThresholds are provided, incorporate them when determining whether conditions would be "uncomfortable".
+Based on the provided weather data, you must also extract the current temperature, humidity, and wind speed for the specified time.
 
-Return the likelihood scores (0-1) for each condition.
-Also, create a detailed report about predicted temperature, humidity, and wind speed for the specified location and time.
+Finally, generate a concise, user-friendly "detailed report" summarizing the key weather metrics (temperature, humidity, wind speed, etc.) from the provided data.
 
-Output in JSON format.
+Input Data:
+- Latitude: {{{latitude}}}
+- Longitude: {{{longitude}}}
+- Date/Time: {{{dateTime}}}
+- Comfort Thresholds: {{{comfortThresholds}}}
+- Weather Data:
+\`\`\`json
+{{{json weatherData}}}
+\`\`\`
+
+Analyze the weather data for the specified date and time to perform the tasks above. Your entire output must be in a single, valid JSON object that conforms to the specified output schema.
 `,
 });
 

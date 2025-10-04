@@ -55,12 +55,12 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location</FormLabel>
+                    <FormLabel>Location (Coordinates)</FormLabel>
                     <FormDescription>
-                      e.g., "New York, NY" or "40.71, -74.00"
+                      e.g., "40.71, -74.00"
                     </FormDescription>
                     <FormControl>
-                      <Input placeholder="Enter location or coordinates" {...field} />
+                      <Input placeholder="Enter latitude, longitude" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
