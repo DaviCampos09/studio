@@ -46,10 +46,14 @@ export async function getForecast(data: ForecasterSchema) {
     const [hours, minutes] = time.split(':').map(Number);
     eventDateTime.setHours(hours, minutes);
     
-    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${geocoded.lat}&longitude=${geocoded.lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&start_date=${date.toISOString().split('T')[0]}&end_date=${date.toISOString().split('T')[0]}`;
+    const dateString = date.toISOString().split('T')[0];
+    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${geocoded.lat}&longitude=${geocoded.lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&start_date=${dateString}&end_date=${dateString}`;
+    
     const weatherResponse = await fetch(weatherApiUrl);
     if (!weatherResponse.ok) {
-        throw new Error(`Failed to fetch weather data: ${weatherResponse.statusText}`);
+        const errorText = await weatherResponse.text();
+        console.error(`Failed to fetch weather data: ${weatherResponse.statusText}`, errorText);
+        throw new Error(`Failed to fetch weather data. The selected date might be out of the forecast range (up to 14 days). Please select a closer date.`);
     }
     const weatherData = await weatherResponse.json();
 
