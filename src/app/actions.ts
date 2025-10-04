@@ -57,9 +57,13 @@ export async function getForecast(data: ForecasterSchema) {
 
     const hourIndex = eventDateTime.getHours();
     
-    const currentTemperature = weatherData.hourly.temperature_2m[hourIndex];
-    const currentHumidity = weatherData.hourly.relative_humidity_2m[hourIndex];
-    const currentWindSpeed = weatherData.hourly.wind_speed_10m[hourIndex];
+    const currentTemperature = weatherData?.hourly?.temperature_2m?.[hourIndex];
+    const currentHumidity = weatherData?.hourly?.relative_humidity_2m?.[hourIndex];
+    const currentWindSpeed = weatherData?.hourly?.wind_speed_10m?.[hourIndex];
+
+    if (currentTemperature === undefined || currentHumidity === undefined || currentWindSpeed === undefined) {
+      return { success: false, error: "There is not enough data to make a forecast for the selected date and location. Please try another one." };
+    }
 
     const input: ConditionLikelihoodForecastInput = {
       latitude: geocoded.lat,
