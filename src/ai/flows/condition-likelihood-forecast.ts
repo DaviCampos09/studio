@@ -72,7 +72,7 @@ Additionally, you must calculate a general "uncomfortable" likelihood score. Thi
 
 Based on the provided weather data, you must also extract the current temperature, humidity, and wind speed for the specified time.
 
-Finally, generate a concise, user-friendly "detailed report" summarizing the key weather metrics (temperature, humidity, wind speed, etc.) from the provided data.
+Finally, generate a concise, user-friendly "detailed report" summarizing the key weather metrics (temperature, humidity, wind speed, etc.) from the provided data. This report MUST include the latitude and longitude for the location.
 
 Input Data:
 - Latitude: {{{latitude}}}

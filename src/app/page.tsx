@@ -8,21 +8,24 @@ import { ForecastDisplay } from "@/components/forecast-display";
 import type { ConditionLikelihoodForecastOutput } from "@/ai/flows/condition-likelihood-forecast";
 import type { ForecasterSchema } from "@/lib/schemas";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CloudDrizzle } from "lucide-react";
+import { CloudDrizzle, MapPin } from "lucide-react";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [forecast, setForecast] = useState<ConditionLikelihoodForecastOutput | null>(null);
+  const [locationName, setLocationName] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleFormSubmit = async (data: ForecasterSchema) => {
     setIsLoading(true);
     setForecast(null);
+    setLocationName(null);
 
     const result = await getForecast(data);
 
     if (result.success && result.data) {
       setForecast(result.data);
+      setLocationName(result.displayName ?? null);
     } else {
       toast({
         variant: "destructive",
@@ -78,7 +81,17 @@ export default function Home() {
         </div>
         <div className="lg:col-span-2">
           {isLoading && <LoadingSkeleton />}
-          {forecast && <ForecastDisplay forecast={forecast} />}
+          {forecast && (
+            <>
+              {locationName && (
+                  <div className="mb-4 flex items-center text-sm text-muted-foreground bg-card border rounded-lg p-3">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Showing forecast for: <span className="font-semibold ml-1">{locationName}</span>
+                  </div>
+              )}
+              <ForecastDisplay forecast={forecast} />
+            </>
+          )}
           {!isLoading && !forecast && (
             <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px] bg-card rounded-lg border border-dashed p-8">
               <div className="p-4 bg-secondary rounded-full mb-4">
