@@ -1,0 +1,50 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Sun, Snowflake, Wind, Droplets, Frown } from "lucide-react";
+import type { ConditionLikelihoodForecastOutput } from "@/ai/flows/condition-likelihood-forecast";
+import React from "react";
+
+type Likelihoods = ConditionLikelihoodForecastOutput['conditionLikelihoods'];
+
+const scoreConfig: { [key in keyof Likelihoods]: { label: string; icon: React.ElementType; color: string } } = {
+  veryHot: { label: "Very Hot", icon: Sun, color: "bg-chart-1" },
+  veryCold: { label: "Very Cold", icon: Snowflake, color: "bg-chart-3" },
+  veryWindy: { label: "Very Windy", icon: Wind, color: "bg-chart-4" },
+  veryHumid: { label: "Very Humid", icon: Droplets, color: "bg-chart-2" },
+  uncomfortable: { label: "Uncomfortable", icon: Frown, color: "bg-chart-5" },
+};
+
+export function LikelihoodScores({ likelihoods }: { likelihoods: Likelihoods }) {
+    const sortedLikelihoods = (Object.keys(likelihoods) as Array<keyof Likelihoods>).sort((a, b) => likelihoods[b] - likelihoods[a]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-headline">Condition Likelihood</CardTitle>
+        <CardDescription>Based on historical data and forecast models.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {sortedLikelihoods.map((key) => {
+          const config = scoreConfig[key];
+          const value = likelihoods[key] * 100;
+          if (!config) return null;
+
+          return (
+            <div key={key} className="grid gap-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <config.icon className="mr-2 h-5 w-5 text-muted-foreground" />
+                  <span className="font-medium">{config.label}</span>
+                </div>
+                <span className="font-semibold">{value.toFixed(0)}%</span>
+              </div>
+              <Progress value={value} indicatorClassName={config.color} />
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
+  );
+}
