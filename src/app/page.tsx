@@ -13,22 +13,16 @@ import { CloudDrizzle } from "lucide-react";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [forecast, setForecast] = useState<ConditionLikelihoodForecastOutput | null>(null);
-  const [location, setLocation] = useState<string>("");
-  const [displayName, setDisplayName] = useState<string>("");
   const { toast } = useToast();
 
   const handleFormSubmit = async (data: ForecasterSchema) => {
     setIsLoading(true);
     setForecast(null);
-    setLocation("");
-    setDisplayName("");
 
     const result = await getForecast(data);
 
-    if (result.success && result.data && result.location && result.displayName) {
+    if (result.success && result.data) {
       setForecast(result.data);
-      setLocation(result.location);
-      setDisplayName(result.displayName);
     } else {
       toast({
         variant: "destructive",
@@ -57,15 +51,9 @@ export default function Home() {
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-            <Skeleton className="h-6 w-1/2" />
-            <Skeleton className="h-48 w-full" />
-        </div>
-        <div className="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-            <Skeleton className="h-6 w-1/2" />
-            <Skeleton className="h-48 w-full" />
-        </div>
+      <div className="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="h-48 w-full" />
       </div>
     </div>
   );
@@ -90,7 +78,7 @@ export default function Home() {
         </div>
         <div className="lg:col-span-2">
           {isLoading && <LoadingSkeleton />}
-          {forecast && <ForecastDisplay forecast={forecast} location={location} displayName={displayName} />}
+          {forecast && <ForecastDisplay forecast={forecast} />}
           {!isLoading && !forecast && (
             <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px] bg-card rounded-lg border border-dashed p-8">
               <div className="p-4 bg-secondary rounded-full mb-4">
