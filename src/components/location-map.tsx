@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, WMSTileLayer } from 'react-leaflet';
+import React, { useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, WMSTileLayer, useMap } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Layers } from 'lucide-react';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import type { ConditionLikelihoodForecastOutput } from '@/ai/flows/condition-likelihood-forecast';
-import { Skeleton } from './ui/skeleton';
-import { LatLngExpression } from 'leaflet';
-
+import type { LatLngExpression } from 'leaflet';
 
 interface LocationMapProps {
   location: string;
@@ -17,13 +15,13 @@ interface LocationMapProps {
   displayName: string;
 }
 
-const parseCoordinates = (location: string): { lat: number; lng: number } | null => {
+const parseCoordinates = (location: string): LatLngExpression | null => {
   const parts = location.split(',').map(s => s.trim());
   if (parts.length === 2) {
     const lat = parseFloat(parts[0]);
     const lng = parseFloat(parts[1]);
     if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      return { lat, lng };
+      return [lat, lng];
     }
   }
   return null;
@@ -35,20 +33,39 @@ const nasaLayers = {
     precipitation: { name: 'Precipitation (GPM)', url: 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi', params: { layers: 'GPM_3IMERGHHE_Precipitation' } },
 };
 
-function MapWrapper({ center, children }: { center: LatLngExpression, children: React.ReactNode }) {
-    return (
-        <MapContainer center={center} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
-            {children}
-        </MapContainer>
-    );
+// This component will programmatically update the map's view
+function MapUpdater({ center }: { center: LatLngExpression }) {
+  const map = useMap();
+  React.useEffect(() => {
+    map.setView(center, map.getZoom());
+  }, [center, map]);
+  return null;
 }
 
-
 export function LocationMap({ location, forecast, displayName }: LocationMapProps) {
-  const [activeLayer, setActiveLayer] = useState<keyof typeof nasaLayers>('none');
+  const [activeLayer, setActiveLayer] = React.useState<keyof typeof nasaLayers>('none');
   const position = useMemo(() => parseCoordinates(location), [location]);
   
   const currentLayer = nasaLayers[activeLayer];
+
+  if (!position) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="font-headline">Location Map</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center text-center h-48 bg-muted rounded-md">
+            <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">Could not display map.</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Enter a location in the form to see it on the map.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -76,8 +93,8 @@ export function LocationMap({ location, forecast, displayName }: LocationMapProp
       </CardHeader>
       <CardContent>
         <div className="h-48 w-full rounded-md overflow-hidden">
-          {position ? (
-            <MapWrapper center={[position.lat, position.lng]}>
+            <MapContainer center={position} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+              <MapUpdater center={position} />
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -92,7 +109,7 @@ export function LocationMap({ location, forecast, displayName }: LocationMapProp
                       }}
                   />
               )}
-              <Marker position={[position.lat, position.lng]}>
+              <Marker position={position}>
                 {forecast?.currentWeather && (
                   <Popup>
                     Temperature: {forecast.currentWeather.temperature}°C <br />
@@ -100,16 +117,7 @@ export function LocationMap({ location, forecast, displayName }: LocationMapProp
                   </Popup>
                 )}
               </Marker>
-            </MapWrapper>
-          ) : (
-            <div className="flex flex-col items-center justify-center text-center h-48">
-              <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">Could not display map.</p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Enter a location in the form to see it on the map.
-              </p>
-            </div>
-          )}
+            </MapContainer>
         </div>
       </CardContent>
     </Card>
