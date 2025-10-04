@@ -15,6 +15,7 @@ const ConditionLikelihoodForecastInputSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   dateTime: z.string().describe('The specific date and time for the outdoor event (e.g., ISO date string).'),
+  eventDetails: z.string().optional().describe('User-provided details about the event, like if it is indoors or outdoors.'),
   currentWeather: z.object({
     temperature: z.number(),
     humidity: z.number(),
@@ -91,6 +92,7 @@ Input Data:
 - Latitude: {{{latitude}}}
 - Longitude: {{{longitude}}}
 - Date/Time: {{{dateTime}}}
+- Event Details: {{{eventDetails}}}
 - Comfort Thresholds: {{{json comfortThresholds}}}
 - Current Weather for the event:
 \`\`\`json

@@ -6,13 +6,12 @@ import {
 } from '@/ai/flows/condition-likelihood-forecast';
 import type { ForecasterSchema } from '@/lib/schemas';
 
-// Adicionada função de geocodificação para converter nome de local em coordenadas
 async function geocodeLocation(location: string): Promise<{ lat: number; lon: number; name: string } | null> {
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`;
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'OutdoorEventForecaster/1.0 (dev@example.com)' // API Nominatim requer um User-Agent
+        'User-Agent': 'OutdoorEventForecaster/1.0 (dev@example.com)'
       }
     });
     if (!response.ok) {
@@ -36,9 +35,8 @@ async function geocodeLocation(location: string): Promise<{ lat: number; lon: nu
 
 export async function getForecast(data: ForecasterSchema) {
   try {
-    const { date, time, temperature, humidity, windSpeed, location } = data;
+    const { date, time, temperature, humidity, windSpeed, location, eventDetails } = data;
 
-    // Usar o serviço de geocodificação
     const geocoded = await geocodeLocation(location);
     if (!geocoded) {
       return { success: false, error: `Could not find coordinates for "${location}". Please try a different location.` };
@@ -69,6 +67,7 @@ export async function getForecast(data: ForecasterSchema) {
       latitude: geocoded.lat,
       longitude: geocoded.lon,
       dateTime: eventDateTime.toISOString(),
+      eventDetails: eventDetails,
       currentWeather: {
         temperature: currentTemperature,
         humidity: currentHumidity,
@@ -91,7 +90,6 @@ export async function getForecast(data: ForecasterSchema) {
     }
     
     const result = await conditionLikelihoodForecast(input);
-    // Retornar as coordenadas e nome encontrados para usar no front-end
     return { success: true, data: result, location: `${geocoded.lat}, ${geocoded.lon}`, displayName: geocoded.name };
   } catch (error) {
     console.error(error);

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Loader2, Thermometer, Droplets, Wind, Settings2, MapPin } from "lucide-react";
+import { CalendarIcon, Loader2, Thermometer, Droplets, Wind, Settings2, MapPin, Info } from "lucide-react";
 import { format } from "date-fns";
 import React from 'react';
 
@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +35,7 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
     resolver: zodResolver(forecasterSchema),
     defaultValues: {
       location: "",
+      eventDetails: "",
       time: "14:00",
       temperature: "",
       humidity: "",
@@ -59,12 +61,32 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                       <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                       Location
                     </FormLabel>
-                    <FormDescription>
-                      e.g., "New York, NY" or "Eiffel Tower"
-                    </FormDescription>
                     <FormControl>
-                      <Input placeholder="Enter a city, address, or landmark" {...field} />
+                      <Input placeholder="e.g., New York, NY or Eiffel Tower" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="eventDetails"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center">
+                      <Info className="mr-2 h-4 w-4 text-muted-foreground" />
+                      Event Details
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="e.g., Wedding in an open-air tent, outdoor concert, indoor conference..."
+                        {...field}
+                      />
+                    </FormControl>
+                     <FormDescription>
+                      Is the event in an open or closed space? Any details can help.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
