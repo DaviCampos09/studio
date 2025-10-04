@@ -15,7 +15,11 @@ const ConditionLikelihoodForecastInputSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   dateTime: z.string().describe('The specific date and time for the outdoor event (e.g., ISO date string).'),
-  weatherData: z.any().describe('The weather data from Open-Meteo API.'),
+  currentWeather: z.object({
+    temperature: z.number(),
+    humidity: z.number(),
+    windSpeed: z.number(),
+  }),
   comfortThresholds: z
     .object({
       temperature: z.number().optional().describe('The temperature threshold for discomfort.'),
@@ -66,25 +70,31 @@ const prompt = ai.definePrompt({
   output: {schema: ConditionLikelihoodForecastOutputSchema},
   prompt: `You are an AI assistant specialized in interpreting weather data to forecast condition likelihoods for outdoor events.
 
-You will receive weather data from the Open-Meteo API for a specific location and time, and optional user-defined comfort thresholds. Using this data, you must determine the likelihood (from 0.0 to 1.0) of the following adverse conditions: "very hot", "very cold", "very windy", and "very humid".
+You will receive specific weather data for a location and time. Using this data, you must determine the likelihood (from 0.0 to 1.0) of the following adverse conditions: "very hot", "very cold", "very windy", and "very humid".
+
+- A "veryHot" score of 1.0 corresponds to temperatures above 35°C.
+- A "veryCold" score of 1.0 corresponds to temperatures below 5°C.
+- A "veryWindy" score of 1.0 corresponds to wind speeds above 40 km/h.
+- A "veryHumid" score of 1.0 corresponds to humidity above 90%.
+- The scores should scale linearly. For example, a temperature of 20°C is halfway between 5°C and 35°C, but it's not considered hot or cold, so scores should be low. The "veryHot" score should only start increasing above 25°C.
 
 Additionally, you must calculate a general "uncomfortable" likelihood score. This score should be based on a combination of the weather data and the user's comfort thresholds if provided. For example, if the user sets a temperature threshold of 30°C and the forecast is 32°C, the "uncomfortable" score should increase.
 
-Based on the provided weather data, you must also extract the current temperature, humidity, and wind speed for the specified time.
+The current weather data for the specified time is provided in the input.
 
-Finally, generate a concise, user-friendly "detailed report" summarizing the key weather metrics (temperature, humidity, wind speed, etc.) from the provided data. This report MUST include the latitude and longitude for the location.
+Finally, generate a concise, user-friendly "detailed report" summarizing the key weather metrics (temperature, humidity, wind speed) and mention the location's coordinates.
 
 Input Data:
 - Latitude: {{{latitude}}}
 - Longitude: {{{longitude}}}
 - Date/Time: {{{dateTime}}}
 - Comfort Thresholds: {{{comfortThresholds}}}
-- Weather Data:
+- Current Weather for the event:
 \`\`\`json
-{{{json weatherData}}}
+{{{json currentWeather}}}
 \`\`\`
 
-Analyze the weather data for the specified date and time to perform the tasks above. Your entire output must be in a single, valid JSON object that conforms to the specified output schema.
+Analyze the weather data to perform the tasks above. Your entire output must be in a single, valid JSON object that conforms to the specified output schema.
 `,
 });
 

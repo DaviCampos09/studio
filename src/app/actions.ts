@@ -44,9 +44,9 @@ export async function getForecast(data: ForecasterSchema) {
       return { success: false, error: `Could not find coordinates for "${location}". Please try a different location.` };
     }
 
-    const dateTime = new Date(date);
+    const eventDateTime = new Date(date);
     const [hours, minutes] = time.split(':').map(Number);
-    dateTime.setHours(hours, minutes);
+    eventDateTime.setHours(hours, minutes);
     
     const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${geocoded.lat}&longitude=${geocoded.lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&start_date=${date.toISOString().split('T')[0]}&end_date=${date.toISOString().split('T')[0]}`;
     const weatherResponse = await fetch(weatherApiUrl);
@@ -55,11 +55,21 @@ export async function getForecast(data: ForecasterSchema) {
     }
     const weatherData = await weatherResponse.json();
 
+    const hourIndex = eventDateTime.getHours();
+    
+    const currentTemperature = weatherData.hourly.temperature_2m[hourIndex];
+    const currentHumidity = weatherData.hourly.relative_humidity_2m[hourIndex];
+    const currentWindSpeed = weatherData.hourly.wind_speed_10m[hourIndex];
+
     const input: ConditionLikelihoodForecastInput = {
       latitude: geocoded.lat,
       longitude: geocoded.lon,
-      dateTime: dateTime.toISOString(),
-      weatherData,
+      dateTime: eventDateTime.toISOString(),
+      currentWeather: {
+        temperature: currentTemperature,
+        humidity: currentHumidity,
+        windSpeed: currentWindSpeed,
+      }
     };
     
     const tempNum = temperature ? parseFloat(temperature) : undefined;
