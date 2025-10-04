@@ -72,13 +72,16 @@ const prompt = ai.definePrompt({
 
 You will receive specific weather data for a location and time. Using this data, you must determine the likelihood (from 0.0 to 1.0) of the following adverse conditions: "very hot", "very cold", "very windy", and "very humid".
 
-- A "veryHot" score should only start increasing above 25°C and corresponds to 1.0 at temperatures above 35°C.
-- A "veryCold" score should only start increasing below 15°C and corresponds to 1.0 at temperatures below 5°C.
-- A "veryWindy" score corresponds to 1.0 at wind speeds above 40 km/h.
-- A "veryHumid" score corresponds to 1.0 at humidity above 90%.
-- The scores should scale linearly within their defined ranges. For example, a temperature of 30°C is halfway between 25°C and 35°C, so the "veryHot" score should be around 0.5.
+You must use a strict linear interpolation formula for your calculations. The formula is: score = (current_value - start_value) / (end_value - start_value).
 
-Additionally, you must calculate a general "uncomfortable" likelihood score. This score should be based on a combination of the weather data and the user's comfort thresholds if provided. For example, if the user sets a temperature threshold of 30°C and the forecast is 32°C, the "uncomfortable" score should increase.
+Here are the ranges for each condition:
+- "veryHot": Starts at 25°C (score 0.0) and reaches its maximum at 35°C (score 1.0). For a temperature of 30.5°C, the score must be (30.5 - 25) / (35 - 25) = 0.55.
+- "veryCold": Starts at 15°C (score 0.0) and reaches its maximum at 5°C (score 1.0).
+- "veryWindy": Starts at 0 km/h (score 0.0) and reaches its maximum at 40 km/h (score 1.0).
+- "veryHumid": Starts at 0% (score 0.0) and reaches its maximum at 90% (score 1.0).
+- Scores must be clamped between 0.0 and 1.0.
+
+Additionally, you must calculate a general "uncomfortable" likelihood score. This score should be high if the weather conditions exceed the user's specified comfort thresholds. If no thresholds are provided, make a reasonable judgment based on a combination of the other scores.
 
 The current weather data for the specified time is provided in the input.
 
@@ -88,7 +91,7 @@ Input Data:
 - Latitude: {{{latitude}}}
 - Longitude: {{{longitude}}}
 - Date/Time: {{{dateTime}}}
-- Comfort Thresholds: {{{comfortThresholds}}}
+- Comfort Thresholds: {{{json comfortThresholds}}}
 - Current Weather for the event:
 \`\`\`json
 {{{json currentWeather}}}
