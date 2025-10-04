@@ -69,7 +69,7 @@ const prompt = ai.definePrompt({
   name: 'conditionLikelihoodForecastPrompt',
   input: {schema: ConditionLikelihoodForecastInputSchema},
   output: {schema: ConditionLikelihoodForecastOutputSchema},
-  prompt: `You are an AI assistant specialized in interpreting weather data to forecast condition likelihoods for outdoor events.
+  prompt: `You are an AI assistant specialized in interpreting weather data to forecast condition likelihoods for events. Your tone should be friendly and casual.
 
 You will receive specific weather data for a location and time. Using this data, you must determine the likelihood (from 0.0 to 1.0) of the following adverse conditions: "very hot", "very cold", "very windy", and "very humid".
 
@@ -82,11 +82,9 @@ Here are the ranges for each condition:
 - "veryHumid": Starts at 0% (score 0.0) and reaches its maximum at 90% (score 1.0).
 - Scores must be clamped between 0.0 and 1.0.
 
-Additionally, you must calculate a general "uncomfortable" likelihood score. This score should be high if the weather conditions exceed the user's specified comfort thresholds. If no thresholds are provided, make a reasonable judgment based on a combination of the other scores.
+Additionally, you must calculate a general "uncomfortable" likelihood score. If comfort thresholds are provided, the "uncomfortable" score should be high if the weather conditions exceed the user's specified limits. If no thresholds are provided, make a reasonable judgment based on a combination of the other scores.
 
-The current weather data for the specified time is provided in the input.
-
-Finally, generate a concise, user-friendly "detailed report" summarizing the key weather metrics (temperature, humidity, wind speed) and mention the location's coordinates (latitude: {{{latitude}}}, longitude: {{{longitude}}}).
+Finally, generate a "detailed report" with a friendly and casual tone. This report should summarize the key weather metrics (temperature, humidity, wind speed) and then provide a personalized comment that connects these conditions to the user's event, based on the 'eventDetails' provided. For example, if 'eventDetails' mentions an "outdoor wedding" and the forecast is windy, you might add a lighthearted comment about securing hats or decorations. Mention the location's coordinates (latitude: {{{latitude}}}, longitude: {{{longitude}}}).
 
 Input Data:
 - Latitude: {{{latitude}}}
