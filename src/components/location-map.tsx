@@ -7,6 +7,8 @@ import { AlertCircle, Layers } from 'lucide-react';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import type { ConditionLikelihoodForecastOutput } from '@/ai/flows/condition-likelihood-forecast';
+import { Skeleton } from './ui/skeleton';
+
 
 interface LocationMapProps {
   location: string;
@@ -41,44 +43,28 @@ export function LocationMap({ location, forecast, displayName }: LocationMapProp
     setIsClient(true);
   }, []);
 
-
-  if (!isClient) {
-      return (
-          <Card>
-            <CardHeader>
-                <CardTitle className="font-headline">Location Map</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="h-48 w-full rounded-md bg-muted animate-pulse" />
-            </CardContent>
-          </Card>
-      );
-  }
-
-  if (!position) {
-     return (
+  const MapPlaceholder = () => (
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">Location Map</CardTitle>
+            <CardTitle className="font-headline">Location Map</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center text-center h-48">
-           <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
-           <p className="text-muted-foreground">Could not display map.</p>
-           <p className="text-xs text-muted-foreground mt-2">
-            Enter a location in the form to see it on the map.
-           </p>
+        <CardContent>
+            <Skeleton className="h-48 w-full" />
         </CardContent>
       </Card>
-    );
+  );
+
+  if (!isClient) {
+    return <MapPlaceholder />;
   }
-  
+
   const currentLayer = nasaLayers[activeLayer];
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div className='flex-1 overflow-hidden'>
-            <CardTitle className="font-headline truncate" title={displayName}>{displayName}</CardTitle>
+            <CardTitle className="font-headline truncate" title={displayName}>{displayName || 'Location Map'}</CardTitle>
         </div>
          <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -100,30 +86,40 @@ export function LocationMap({ location, forecast, displayName }: LocationMapProp
       </CardHeader>
       <CardContent>
         <div className="h-48 w-full rounded-md overflow-hidden">
-          <MapContainer key={location} center={[position.lat, position.lng]} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {currentLayer.url && (
-                <WMSTileLayer
-                    url={currentLayer.url}
-                    params={{
-                        ...currentLayer.params,
-                        transparent: true,
-                        format: 'image/png',
-                    }}
-                />
-            )}
-            <Marker position={[position.lat, position.lng]}>
-              {forecast?.currentWeather && (
-                <Popup>
-                  Temperature: {forecast.currentWeather.temperature}°C <br />
-                  Humidity: {forecast.currentWeather.humidity}%
-                </Popup>
+          {position ? (
+            <MapContainer key={location} center={[position.lat, position.lng]} zoom={10} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {currentLayer.url && (
+                  <WMSTileLayer
+                      url={currentLayer.url}
+                      params={{
+                          ...currentLayer.params,
+                          transparent: true,
+                          format: 'image/png',
+                      }}
+                  />
               )}
-            </Marker>
-          </MapContainer>
+              <Marker position={[position.lat, position.lng]}>
+                {forecast?.currentWeather && (
+                  <Popup>
+                    Temperature: {forecast.currentWeather.temperature}°C <br />
+                    Humidity: {forecast.currentWeather.humidity}%
+                  </Popup>
+                )}
+              </Marker>
+            </MapContainer>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center h-48">
+              <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">Could not display map.</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Enter a location in the form to see it on the map.
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
