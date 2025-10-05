@@ -3,7 +3,6 @@
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
 import L, { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
 
 // Custom icon to fix marker issues in Next.js
@@ -111,15 +110,12 @@ export function MapDisplay({ location }: MapDisplayProps) {
   }, [location]); // Re-run when location changes
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="font-headline flex items-center">
-            <MapPin className="mr-2 h-5 w-5" /> Location Map
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-56 w-full rounded-lg overflow-hidden z-0" ref={mapContainerRef} />
-      </CardContent>
-    </Card>
+    <>
+      <div className="flex items-center mb-2">
+        <MapPin className="mr-2 h-5 w-5" />
+        <h3 className="font-headline text-lg">Location Map</h3>
+      </div>
+      <div className="h-56 w-full rounded-lg overflow-hidden z-0" ref={mapContainerRef} />
+    </>
   );
 }

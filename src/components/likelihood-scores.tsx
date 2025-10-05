@@ -5,8 +5,22 @@ import { Progress } from "@/components/ui/progress";
 import { Sun, Snowflake, Wind, Droplets, Frown } from "lucide-react";
 import type { ConditionLikelihoodForecastOutput } from "@/ai/flows/condition-likelihood-forecast";
 import React from "react";
+import dynamic from 'next/dynamic';
+import { Skeleton } from "./ui/skeleton";
+import { Separator } from "./ui/separator";
+
+// Dynamically import MapDisplay only on the client side
+const MapDisplay = dynamic(() => import('./map-display').then(mod => mod.MapDisplay), {
+  ssr: false,
+  loading: () => <Skeleton className="h-56 w-full" />
+});
 
 type Likelihoods = ConditionLikelihoodForecastOutput['conditionLikelihoods'];
+
+interface LikelihoodScoresProps {
+  likelihoods: Likelihoods;
+  location: [number, number] | null;
+}
 
 const scoreConfig: { [key in keyof Likelihoods]: { label: string; icon: React.ElementType; color: string } } = {
   veryHot: { label: "Very Hot", icon: Sun, color: "bg-chart-1" },
@@ -16,7 +30,7 @@ const scoreConfig: { [key in keyof Likelihoods]: { label: string; icon: React.El
   uncomfortable: { label: "Uncomfortable", icon: Frown, color: "bg-chart-5" },
 };
 
-export function LikelihoodScores({ likelihoods }: { likelihoods: Likelihoods }) {
+export function LikelihoodScores({ likelihoods, location }: LikelihoodScoresProps) {
     const sortedLikelihoods = (Object.keys(likelihoods) as Array<keyof Likelihoods>).sort((a, b) => likelihoods[b] - likelihoods[a]);
 
   return (
@@ -44,6 +58,10 @@ export function LikelihoodScores({ likelihoods }: { likelihoods: Likelihoods }) 
             </div>
           );
         })}
+      </CardContent>
+      <Separator className="my-4" />
+      <CardContent>
+        {location && <MapDisplay location={location} />}
       </CardContent>
     </Card>
   );

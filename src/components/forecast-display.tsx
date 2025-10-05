@@ -1,15 +1,8 @@
 import type { ConditionLikelihoodForecastOutput } from "@/ai/flows/condition-likelihood-forecast";
 import { LikelihoodScores } from "./likelihood-scores";
 import { DetailedReport } from "./detailed-report";
-import dynamic from 'next/dynamic';
 import { Skeleton } from "./ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// Dynamically import MapDisplay only on the client side
-const MapDisplay = dynamic(() => import('./map-display').then(mod => mod.MapDisplay), {
-  ssr: false,
-  loading: () => <Skeleton className="h-56 w-full" />
-});
 
 interface ForecastDisplayProps {
   forecast: ConditionLikelihoodForecastOutput | null;
@@ -21,19 +14,15 @@ export function ForecastDisplay({ forecast, location }: ForecastDisplayProps) {
   const shouldShowContent = forecast && !isNaN(forecast?.currentWeather?.temperature);
 
   return (
-    <div className="space-y-6" style={{ display: shouldShowContent ? 'block' : 'none' }}>
+    <div className="space-y-4" style={{ display: shouldShowContent ? 'block' : 'none' }}>
       {forecast && (
         <Tabs defaultValue="summary" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="summary">Resumo</TabsTrigger>
-            <TabsTrigger value="map">Mapa</TabsTrigger>
             <TabsTrigger value="report">Relatório</TabsTrigger>
           </TabsList>
           <TabsContent value="summary" className="mt-4">
-            <LikelihoodScores likelihoods={forecast.conditionLikelihoods} />
-          </TabsContent>
-          <TabsContent value="map" className="mt-4">
-            {location && <MapDisplay location={location} />}
+            <LikelihoodScores likelihoods={forecast.conditionLikelihoods} location={location} />
           </TabsContent>
           <TabsContent value="report" className="mt-4">
             <DetailedReport report={forecast.detailedReport} />
