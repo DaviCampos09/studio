@@ -1,13 +1,13 @@
 "use client";
 
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Icon, type Map as LeafletMap } from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { Icon, type LatLngExpression } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
 import { useEffect } from 'react';
 
-// Custom icon for the map marker
+// Custom icon for the map marker to fix a known issue with react-leaflet
 const customIcon = new Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -18,19 +18,20 @@ const customIcon = new Icon({
   shadowSize: [41, 41]
 });
 
-interface MapDisplayProps {
-  location: [number, number];
-  map: LeafletMap | null;
-  setMap: (map: LeafletMap | null) => void;
+// Child component to handle map view changes
+function ChangeView({ center, zoom }: { center: LatLngExpression, zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center, zoom, map]);
+  return null;
 }
 
-export function MapDisplay({ location, map, setMap }: MapDisplayProps) {
-  useEffect(() => {
-    if (map && location) {
-      map.setView(location, 13);
-    }
-  }, [location, map]);
+interface MapDisplayProps {
+  location: [number, number];
+}
 
+export function MapDisplay({ location }: MapDisplayProps) {
   return (
     <Card>
       <CardHeader>
@@ -45,8 +46,8 @@ export function MapDisplay({ location, map, setMap }: MapDisplayProps) {
                 zoom={13} 
                 scrollWheelZoom={false} 
                 style={{ height: '100%', width: '100%' }}
-                whenReady={setMap}
             >
+                <ChangeView center={location} zoom={13} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

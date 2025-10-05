@@ -9,14 +9,12 @@ import type { ConditionLikelihoodForecastOutput } from "@/ai/flows/condition-lik
 import type { ForecasterSchema } from "@/lib/schemas";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CloudDrizzle, MapPin } from "lucide-react";
-import type { Map as LeafletMap } from 'leaflet';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [forecast, setForecast] = useState<ConditionLikelihoodForecastOutput | null>(null);
   const [locationName, setLocationName] = useState<string | null>(null);
   const [locationCoords, setLocationCoords] = useState<[number, number] | null>(null);
-  const [map, setMap] = useState<LeafletMap | null>(null);
   const { toast } = useToast();
 
   const handleFormSubmit = async (data: ForecasterSchema) => {
@@ -97,7 +95,7 @@ export default function Home() {
                       Showing forecast for: <span className="font-semibold ml-1">{locationName}</span>
                   </div>
               )}
-            <ForecastDisplay forecast={forecast} location={locationCoords} map={map} setMap={setMap} />
+            <ForecastDisplay forecast={forecast} location={locationCoords} />
           </div>
 
           {!isLoading && !forecast && (
