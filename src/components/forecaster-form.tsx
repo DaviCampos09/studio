@@ -165,8 +165,8 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                         Customize Thresholds
                         </Button>
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-4 space-y-4 rounded-md border p-4 absolute bg-card shadow-lg z-10 w-[calc(66.66%-0.5rem)]">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <CollapsibleContent className="mt-4 space-y-4 rounded-md border p-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                         <FormField
                             control={form.control}
                             name="temperature"
