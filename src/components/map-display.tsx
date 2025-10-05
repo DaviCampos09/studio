@@ -40,51 +40,17 @@ export function MapDisplay({ location }: MapDisplayProps) {
           attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }
       );
-      
-      const wmsUrl = 'https://terrabrasilis.dpi.inpe.br/geoserver/wms';
-      
-      const inpeCbers4aMux = L.tileLayer.wms(wmsUrl, {
-        layers: 'cbers4a-mux',
-        format: 'image/png',
-        transparent: true,
-        attribution: 'INPE'
-      });
-      
-      const inpeCbers4Mux = L.tileLayer.wms(wmsUrl, {
-        layers: 'cbers4-mux',
-        format: 'image/png',
-        transparent: true,
-        attribution: 'INPE'
-      });
-      
-      const inpeCbers4Wfi = L.tileLayer.wms(wmsUrl, {
-        layers: 'cbers4-wfi',
-        format: 'image/png',
-        transparent: true,
-        attribution: 'INPE'
-      });
-      
-      const inpeSentinel2 = L.tileLayer.wms(wmsUrl, {
-        layers: 's2-l4-bands-rgb',
-        format: 'image/png',
-        transparent: true,
-        attribution: 'INPE'
-      });
 
       const map = L.map(mapContainerRef.current, {
         center: location,
         zoom: 13,
         scrollWheelZoom: false,
-        layers: [streets] // Apenas a camada de ruas é adicionada na inicialização
+        layers: [streets]
       });
       
       const baseMaps = {
         "Streets": streets,
         "Satellite": satellite,
-        "CBERS-4A MUX (INPE)": inpeCbers4aMux,
-        "CBERS-4 MUX (INPE)": inpeCbers4Mux,
-        "CBERS-4 WFI (INPE)": inpeCbers4Wfi,
-        "Sentinel-2 (INPE)": inpeSentinel2,
       };
 
       L.control.layers(baseMaps).addTo(map);
@@ -96,16 +62,14 @@ export function MapDisplay({ location }: MapDisplayProps) {
       markerRef.current = marker;
     }
 
-    // Função de limpeza para destruir o mapa quando o componente é desmontado
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, []); // O array vazio garante que este useEffect rode apenas uma vez
+  }, []);
 
-  // Este useEffect atualiza a visão do mapa e o marcador quando a localização muda
   useEffect(() => {
     if (mapRef.current && markerRef.current && location) {
       mapRef.current.setView(location, 13);
