@@ -48,7 +48,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
         'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=1b3e7d5225d4efa2c229947ce8473543',
         {
           attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
-          opacity: 0.7
+          opacity: 0.8
         }
       );
       
