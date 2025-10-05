@@ -70,20 +70,20 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-12">
-      <header className="text-center mb-12">
-        <div className="inline-block bg-primary/20 p-4 rounded-full mb-4">
-            <CloudDrizzle className="h-12 w-12 text-primary" />
+      <header className="text-center mb-10">
+        <div className="inline-block bg-primary/20 p-3 rounded-full mb-4">
+            <CloudDrizzle className="h-10 w-10 text-primary" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-bold font-headline tracking-tight">
           Outdoor Event Forecaster
         </h1>
-        <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
+        <p className="mt-3 max-w-2xl mx-auto text-base text-muted-foreground">
           Plan your perfect day out. Enter your event details to get an AI-powered weather forecast and condition likelihood analysis.
         </p>
       </header>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 lg:order-first">
           <ForecasterForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
         <div className="lg:col-span-2">
