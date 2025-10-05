@@ -16,7 +16,8 @@ export function ForecastDisplay({ forecast, location }: ForecastDisplayProps) {
         <LikelihoodScores 
           likelihoods={forecast.conditionLikelihoods} 
           report={forecast.detailedReport}
-          location={location} 
+          location={location}
+          forecast={forecast}
         />
       )}
     </div>
