@@ -12,7 +12,7 @@ import { Separator } from "./ui/separator";
 // Dynamically import MapDisplay only on the client side
 const MapDisplay = dynamic(() => import('./map-display').then(mod => mod.MapDisplay), {
   ssr: false,
-  loading: () => <Skeleton className="h-56 w-full" />
+  loading: () => <Skeleton className="h-full w-full min-h-[220px]" />
 });
 
 type Likelihoods = ConditionLikelihoodForecastOutput['conditionLikelihoods'];
@@ -39,29 +39,32 @@ export function LikelihoodScores({ likelihoods, location }: LikelihoodScoresProp
         <CardTitle className="font-headline">Condition Likelihood</CardTitle>
         <CardDescription>Based on historical data and forecast models.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {sortedLikelihoods.map((key) => {
-          const config = scoreConfig[key];
-          const value = likelihoods[key] * 100;
-          if (!config) return null;
-
-          return (
-            <div key={key} className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <config.icon className="mr-2 h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">{config.label}</span>
-                </div>
-                <span className="font-semibold">{value.toFixed(0)}%</span>
-              </div>
-              <Progress value={value} indicatorClassName={config.color} />
-            </div>
-          );
-        })}
-      </CardContent>
-      <Separator className="my-4" />
       <CardContent>
-        {location && <MapDisplay location={location} />}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            {sortedLikelihoods.map((key) => {
+              const config = scoreConfig[key];
+              const value = likelihoods[key] * 100;
+              if (!config) return null;
+
+              return (
+                <div key={key} className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <config.icon className="mr-2 h-5 w-5 text-muted-foreground" />
+                      <span className="font-medium">{config.label}</span>
+                    </div>
+                    <span className="font-semibold">{value.toFixed(0)}%</span>
+                  </div>
+                  <Progress value={value} indicatorClassName={config.color} />
+                </div>
+              );
+            })}
+          </div>
+          <div>
+            {location && <MapDisplay location={location} />}
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
