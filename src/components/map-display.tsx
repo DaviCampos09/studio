@@ -27,6 +27,24 @@ export function MapDisplay({ location }: MapDisplayProps) {
   const layersRef = useRef<{ [key: string]: TileLayer | L.LayerGroup }>({});
 
   useEffect(() => {
+    // Helper function to get today's date in YYYY-MM-DD format
+    const getTodayDate = () => {
+      const today = new Date();
+      return today.toISOString().split('T')[0];
+    };
+    
+    const nasaDate = getTodayDate();
+
+    // Helper function to create a NASA GIBS layer
+    const addNASALayer = (layerName: string, maxNativeZoom: number = 8): L.TileLayer => {
+      const templateUrl = `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${layerName}/default/${nasaDate}/GoogleMapsCompatible_Level${maxNativeZoom}/{z}/{y}/{x}.png`;
+      return L.tileLayer(templateUrl, {
+        attribution: 'NASA GIBS',
+        maxNativeZoom: maxNativeZoom,
+        opacity: 0.75
+      });
+    };
+    
     if (mapContainerRef.current && !mapRef.current) {
       const streets = L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -42,18 +60,12 @@ export function MapDisplay({ location }: MapDisplayProps) {
         }
       );
 
-      const goesInfrared = L.tileLayer(
-        'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/goes-ir-4km-900913/{z}/{x}/{y}.png',
-        {
-          attribution: 'GOES Imagery &copy; Iowa State University',
-          tms: true // Crucial for correct y-axis rendering
-        }
-      );
+      const surfaceTempLayer = addNASALayer('MODIS_Terra_Land_Surface_Temp_Day', 7);
 
       layersRef.current = {
         "Streets": streets,
         "Satellite": satellite,
-        "GOES (Infrared)": goesInfrared,
+        "Surface Temperature": surfaceTempLayer
       };
 
       const map = L.map(mapContainerRef.current, {
