@@ -55,7 +55,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
       const gpm = addNASALayer('GPM_3IMERGHHE_Precipitation');
       const smap = addNASALayer('SMAP_L3_SM_P_E_Soil_Moisture');
       const grace = addNASALayer('GRACE_LND_SRF_WSC_RL06_MASCON_V2_CRI');
-      const geos5 = addNASAL_Layer('GEOS-5_Precipitation_Rate_Surface');
+      const geos5 = addNASALayer('GEOS-5_Precipitation_Rate_Surface');
       
 
       layersRef.current = {
@@ -112,8 +112,4 @@ export function MapDisplay({ location }: MapDisplayProps) {
       </CardContent>
     </Card>
   );
-}
-
-function addNASAL_Layer(layerName: string): L.TileLayer {
-    throw new Error('Function not implemented.');
 }
