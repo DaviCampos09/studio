@@ -6,6 +6,7 @@ import L, { Map as LeafletMap, Marker as LeafletMarker, TileLayer } from 'leafle
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
 
+// Custom icon to fix marker issues in Next.js
 const customIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -24,10 +25,10 @@ export function MapDisplay({ location }: MapDisplayProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<LeafletMarker | null>(null);
-  const layersRef = useRef<{ [key: string]: TileLayer | L.LayerGroup }>({});
 
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
+      // Base Layers
       const streets = L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
@@ -42,6 +43,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
         }
       );
       
+      // Overlay Layers
       const clouds = L.tileLayer(
         'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=1b3e7d5225d4efa2c229947ce8473543',
         {
@@ -49,21 +51,40 @@ export function MapDisplay({ location }: MapDisplayProps) {
           opacity: 0.7
         }
       );
+      
+      const addNASALayer = (layerName: string) => {
+        const today = new Date();
+        const dateString = today.toISOString().split('T')[0];
+        const nasaUrl = `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${layerName}/default/${dateString}/GoogleMapsCompatible_500m/{z}/{y}/{x}.png`;
+        
+        return L.tileLayer(nasaUrl, {
+            attribution: 'NASA GIBS',
+            tileSize: 256,
+            maxNativeZoom: 8,
+            opacity: 0.8
+        });
+      };
+      
+      const nasaTrueColor = addNASALayer('MODIS_Terra_CorrectedReflectance_TrueColor');
 
-      layersRef.current = {
+      const baseLayers = {
         "Streets": streets,
-        "Satellite": satellite,
-        "Clouds": clouds
+        "Satellite": satellite
+      };
+      
+      const overlayLayers = {
+          "NASA (True Color)": nasaTrueColor,
+          "Clouds": clouds
       };
 
       const map = L.map(mapContainerRef.current, {
         center: location,
         zoom: 13,
         scrollWheelZoom: false,
-        layers: [streets] // Default layer
+        layers: [streets] // Default base layer
       });
       
-      L.control.layers(layersRef.current).addTo(map);
+      L.control.layers(baseLayers, overlayLayers).addTo(map);
 
       const marker = L.marker(location, { icon: customIcon }).addTo(map);
       marker.bindPopup('Your event location.');
