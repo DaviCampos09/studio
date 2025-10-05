@@ -6,7 +6,6 @@ import L, { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
 
-// Custom icon for the map marker to fix a known issue with leaflet bundled with webpack
 const customIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -27,7 +26,6 @@ export function MapDisplay({ location }: MapDisplayProps) {
   const markerRef = useRef<LeafletMarker | null>(null);
 
   useEffect(() => {
-    // Initialize map only once
     if (mapContainerRef.current && !mapRef.current) {
       const streets = L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -42,17 +40,41 @@ export function MapDisplay({ location }: MapDisplayProps) {
           attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }
       );
+      
+      const inpeCbers4aMux = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+        layers: 'cbers4a-mux',
+        attribution: 'INPE'
+      });
+      
+      const inpeCbers4Mux = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+        layers: 'cbers4-mux',
+        attribution: 'INPE'
+      });
+      
+      const inpeCbers4Wfi = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+        layers: 'cbers4-wfi',
+        attribution: 'INPE'
+      });
+      
+      const inpeSentinel2 = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+        layers: 's2-l4-bands-rgb',
+        attribution: 'INPE'
+      });
 
       const map = L.map(mapContainerRef.current, {
         center: location,
         zoom: 13,
         scrollWheelZoom: false,
-        layers: [streets] // Default layer
+        layers: [streets]
       });
       
       const baseMaps = {
         "Streets": streets,
-        "Satellite": satellite
+        "Satellite": satellite,
+        "CBERS-4A MUX (INPE)": inpeCbers4aMux,
+        "CBERS-4 MUX (INPE)": inpeCbers4Mux,
+        "CBERS-4 WFI (INPE)": inpeCbers4Wfi,
+        "Sentinel-2 (INPE)": inpeSentinel2,
       };
 
       L.control.layers(baseMaps).addTo(map);
@@ -64,17 +86,15 @@ export function MapDisplay({ location }: MapDisplayProps) {
       markerRef.current = marker;
     }
 
-    // Function to run when the component unmounts
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   useEffect(() => {
-    // Update map view and marker when location changes
     if (mapRef.current && markerRef.current) {
       mapRef.current.setView(location, 13);
       markerRef.current.setLatLng(location);
