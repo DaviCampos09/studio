@@ -46,10 +46,10 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
 
   return (
     <Card className="w-full">
-      <CardHeader className="p-4">
+      <CardHeader>
         <CardTitle className="font-headline text-lg">Event Details</CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-2">
+      <CardContent className="pt-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
             <div className="space-y-4">
@@ -134,79 +134,80 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="eventDetails"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center">
-                      <Info className="mr-2 h-4 w-4 text-muted-foreground" />
-                      Event Details
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="e.g., Outdoor concert, indoor conference..."
-                        {...field}
-                        rows={1}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-end">
+                <FormField
+                  control={form.control}
+                  name="eventDetails"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        <Info className="mr-2 h-4 w-4 text-muted-foreground" />
+                        Event Details
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., Outdoor concert, indoor conference..."
+                          {...field}
+                          rows={1}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="link" className="p-0 text-sm text-accent-foreground/80 hover:text-accent-foreground whitespace-nowrap">
+                      <Settings2 className="mr-2 h-4 w-4" />
+                      Customize Thresholds
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-4 space-y-4 rounded-md border p-4 absolute bg-card shadow-lg z-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <FormField
+                          control={form.control}
+                          name="temperature"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center"><Thermometer className="mr-2 h-4 w-4 text-muted-foreground" />Temp (°C)</FormLabel>
+                              <FormControl>
+                                <Input type="number" placeholder="e.g., 30" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="humidity"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center"><Droplets className="mr-2 h-4 w-4 text-muted-foreground" />Humidity (%)</FormLabel>
+                              <FormControl>
+                                <Input type="number" placeholder="e.g., 80" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="windSpeed"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center"><Wind className="mr-2 h-4 w-4 text-muted-foreground" />Wind (km/h)</FormLabel>
+                              <FormControl>
+                                <Input type="number" placeholder="e.g., 25" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
             </div>
-
-            <Collapsible>
-              <CollapsibleTrigger asChild>
-                <Button variant="link" className="p-0 text-sm text-accent-foreground/80 hover:text-accent-foreground">
-                  <Settings2 className="mr-2 h-4 w-4" />
-                  Customize Comfort Thresholds (Optional)
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-4 space-y-4 rounded-md border p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <FormField
-                      control={form.control}
-                      name="temperature"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center"><Thermometer className="mr-2 h-4 w-4 text-muted-foreground" />Temperature (°C)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="e.g., 30" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="humidity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center"><Droplets className="mr-2 h-4 w-4 text-muted-foreground" />Humidity (%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="e.g., 80" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="windSpeed"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center"><Wind className="mr-2 h-4 w-4 text-muted-foreground" />Wind Speed (km/h)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="e.g., 25" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
 
             <Button type="submit" className="w-full bg-accent hover:bg-accent/90" disabled={isLoading}>
               {isLoading ? (
