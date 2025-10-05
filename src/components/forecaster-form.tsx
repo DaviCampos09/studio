@@ -53,7 +53,7 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
             <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="location"
@@ -134,27 +134,29 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-end">
-                <FormField
-                  control={form.control}
-                  name="eventDetails"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center">
-                        <Info className="mr-2 h-4 w-4 text-muted-foreground" />
-                        Event Details
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="e.g., Outdoor concert, indoor conference..."
-                          {...field}
-                          rows={1}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                <div className="sm:col-span-2">
+                    <FormField
+                    control={form.control}
+                    name="eventDetails"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="flex items-center">
+                            <Info className="mr-2 h-4 w-4 text-muted-foreground" />
+                            Event Details
+                        </FormLabel>
+                        <FormControl>
+                            <Textarea
+                            placeholder="e.g., Outdoor concert, indoor conference..."
+                            {...field}
+                            rows={1}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
                  <Collapsible>
                   <CollapsibleTrigger asChild>
                     <Button variant="link" className="p-0 text-sm text-accent-foreground/80 hover:text-accent-foreground whitespace-nowrap">
