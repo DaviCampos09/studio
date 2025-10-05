@@ -164,45 +164,47 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-4 space-y-4 rounded-md border p-4">
-                 <FormField
-                    control={form.control}
-                    name="temperature"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center"><Thermometer className="mr-2 h-4 w-4 text-muted-foreground" />Temperature (°C)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="e.g., 30" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <FormField
-                    control={form.control}
-                    name="humidity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center"><Droplets className="mr-2 h-4 w-4 text-muted-foreground" />Humidity (%)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="e.g., 80" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="windSpeed"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center"><Wind className="mr-2 h-4 w-4 text-muted-foreground" />Wind Speed (km/h)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="e.g., 25" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      control={form.control}
+                      name="temperature"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center"><Thermometer className="mr-2 h-4 w-4 text-muted-foreground" />Temperature (°C)</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g., 30" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="humidity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center"><Droplets className="mr-2 h-4 w-4 text-muted-foreground" />Humidity (%)</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g., 80" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="windSpeed"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center"><Wind className="mr-2 h-4 w-4 text-muted-foreground" />Wind Speed (km/h)</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g., 25" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                </div>
               </CollapsibleContent>
             </Collapsible>
 
