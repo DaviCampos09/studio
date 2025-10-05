@@ -40,8 +40,8 @@ export function LikelihoodScores({ likelihoods, location }: LikelihoodScoresProp
         <CardDescription>Based on historical data and forecast models.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-4 md:col-span-1">
             {sortedLikelihoods.map((key) => {
               const config = scoreConfig[key];
               const value = likelihoods[key] * 100;
@@ -61,7 +61,7 @@ export function LikelihoodScores({ likelihoods, location }: LikelihoodScoresProp
               );
             })}
           </div>
-          <div>
+          <div className="md:col-span-2">
             {location && <MapDisplay location={location} />}
           </div>
         </div>
