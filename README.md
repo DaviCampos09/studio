@@ -38,33 +38,48 @@ Este é um aplicativo web que fornece previsões meteorológicas baseadas em IA 
 
 ## Começando
 
+Siga estas instruções para configurar e executar o projeto em seu ambiente de desenvolvimento local.
+
 ### Pré-requisitos
 
--   Node.js (v18 ou superior)
--   npm, yarn ou pnpm
+Antes de começar, certifique-se de que você tenha o seguinte software instalado em sua máquina:
+-   [Node.js](https://nodejs.org/) (versão 18 ou superior)
+-   [npm](https://www.npmjs.com/) (geralmente vem com o Node.js) ou outro gerenciador de pacotes como `yarn` ou `pnpm`.
 
-### Instalação e Execução
+### Guia de Instalação e Execução
 
-1.  **Clone o repositório:**
+1.  **Clone o Repositório**
+    Abra seu terminal e clone o repositório do projeto para sua máquina local.
     ```bash
-    git clone <URL_DO_REPOSITORIO>
-    cd <NOME_DO_DIRETORIO>
+    git clone https://github.com/seu-usuario/outdoor-event-forecaster.git
+    cd outdoor-event-forecaster
     ```
+    *(Substitua a URL pelo link correto do seu repositório, se aplicável.)*
 
-2.  **Instale as dependências:**
+2.  **Instale as Dependências**
+    Dentro do diretório do projeto, execute o seguinte comando para instalar todas as dependências necessárias listadas no arquivo `package.json`.
     ```bash
     npm install
     ```
 
-3.  **Configure as variáveis de ambiente:**
-    Crie um arquivo `.env` na raiz do projeto e adicione suas chaves de API, se necessário. O Genkit pode exigir uma chave de API do Gemini.
-    ```
-    GEMINI_API_KEY=SUA_CHAVE_DE_API_AQUI
-    ```
+3.  **Configure as Variáveis de Ambiente**
+    O aplicativo utiliza o modelo de IA generativa Gemini do Google, que requer uma chave de API para funcionar.
 
-4.  **Execute o servidor de desenvolvimento:**
+    -   Crie um arquivo chamado `.env` na raiz do projeto.
+    -   Obtenha uma chave de API do Gemini no [Google AI Studio](https://aistudio.google.com/app/apikey).
+    -   Adicione a chave ao arquivo `.env` da seguinte forma:
+        ```
+        GEMINI_API_KEY=SUA_CHAVE_DE_API_AQUI
+        ```
+
+4.  **Execute o Servidor de Desenvolvimento**
+    Após a conclusão da instalação e configuração, inicie o servidor de desenvolvimento do Next.js.
     ```bash
     npm run dev
     ```
 
-    Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o aplicativo em ação.
+5.  **Acesse a Aplicação**
+    Abra seu navegador e acesse o seguinte endereço para ver a aplicação em funcionamento:
+    [http://localhost:3000](http://localhost:3000)
+
+Agora você está pronto para usar e modificar o Outdoor Event Forecaster!
