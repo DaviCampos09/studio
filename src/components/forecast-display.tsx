@@ -3,6 +3,7 @@ import { LikelihoodScores } from "./likelihood-scores";
 import { DetailedReport } from "./detailed-report";
 import dynamic from 'next/dynamic';
 import { Skeleton } from "./ui/skeleton";
+import type { Map as LeafletMap } from 'leaflet';
 
 const MapDisplay = dynamic(() => import('./map-display').then(mod => mod.MapDisplay), {
   ssr: false,
@@ -12,13 +13,15 @@ const MapDisplay = dynamic(() => import('./map-display').then(mod => mod.MapDisp
 interface ForecastDisplayProps {
   forecast: ConditionLikelihoodForecastOutput;
   location: [number, number] | null;
+  map: LeafletMap | null;
+  setMap: (map: LeafletMap | null) => void;
 }
 
-export function ForecastDisplay({ forecast, location }: ForecastDisplayProps) {
+export function ForecastDisplay({ forecast, location, map, setMap }: ForecastDisplayProps) {
   return (
     <div className="space-y-6">
       <LikelihoodScores likelihoods={forecast.conditionLikelihoods} />
-      {location && <MapDisplay location={location} />}
+      {location && <MapDisplay location={location} map={map} setMap={setMap} />}
       <DetailedReport report={forecast.detailedReport} />
     </div>
   );

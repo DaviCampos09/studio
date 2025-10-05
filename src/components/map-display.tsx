@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon, type Map as LeafletMap } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 // Custom icon for the map marker
 const customIcon = new Icon({
@@ -20,13 +20,13 @@ const customIcon = new Icon({
 
 interface MapDisplayProps {
   location: [number, number];
+  map: LeafletMap | null;
+  setMap: (map: LeafletMap | null) => void;
 }
 
-export function MapDisplay({ location }: MapDisplayProps) {
-  const [map, setMap] = useState<LeafletMap | null>(null);
-
+export function MapDisplay({ location, map, setMap }: MapDisplayProps) {
   useEffect(() => {
-    if (map) {
+    if (map && location) {
       map.setView(location, 13);
     }
   }, [location, map]);
@@ -40,7 +40,8 @@ export function MapDisplay({ location }: MapDisplayProps) {
       </CardHeader>
       <CardContent>
         <div className="h-64 w-full rounded-lg overflow-hidden z-0">
-            <MapContainer 
+          {!map && (
+             <MapContainer 
                 center={location} 
                 zoom={13} 
                 scrollWheelZoom={false} 
@@ -57,6 +58,10 @@ export function MapDisplay({ location }: MapDisplayProps) {
                     </Popup>
                 </Marker>
             </MapContainer>
+          )}
+          {map && (
+             <div id="map" style={{ height: '100%', width: '100%' }} />
+          )}
         </div>
       </CardContent>
     </Card>
