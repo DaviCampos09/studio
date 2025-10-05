@@ -8,7 +8,7 @@ export function DetailedReport({ report }: { report: string }) {
         <CardTitle className="font-headline">Detailed Report</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-40 w-full">
+        <ScrollArea className="h-28 w-full">
           <p className="text-sm whitespace-pre-wrap">{report}</p>
         </ScrollArea>
       </CardContent>
