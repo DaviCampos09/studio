@@ -2,7 +2,7 @@
 
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
-import L, { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
+import L, { Map as LeafletMap, Marker as LeafletMarker, TileLayer } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
 
@@ -24,6 +24,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<LeafletMarker | null>(null);
+  const layersRef = useRef<{ [key: string]: TileLayer }>({});
 
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
@@ -40,20 +41,26 @@ export function MapDisplay({ location }: MapDisplayProps) {
           attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }
       );
+      
+      const goesInfrared = L.tileLayer('https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/goes-ir-4km-900913/{z}/{x}/{y}.png', {
+        attribution: 'GOES Imagery from Iowa Environmental Mesonet',
+        opacity: 0.7
+      });
+
+      layersRef.current = {
+        "Streets": streets,
+        "Satellite": satellite,
+        "GOES (Infrared)": goesInfrared,
+      };
 
       const map = L.map(mapContainerRef.current, {
         center: location,
         zoom: 13,
         scrollWheelZoom: false,
-        layers: [streets]
+        layers: [streets] // Default layer
       });
       
-      const baseMaps = {
-        "Streets": streets,
-        "Satellite": satellite,
-      };
-
-      L.control.layers(baseMaps).addTo(map);
+      L.control.layers(layersRef.current).addTo(map);
 
       const marker = L.marker(location, { icon: customIcon }).addTo(map);
       marker.bindPopup('Your event location.');
@@ -62,20 +69,22 @@ export function MapDisplay({ location }: MapDisplayProps) {
       markerRef.current = marker;
     }
 
+    // Cleanup function to run when component unmounts
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once
 
   useEffect(() => {
     if (mapRef.current && markerRef.current && location) {
-      mapRef.current.setView(location, 13);
-      markerRef.current.setLatLng(location);
+      const newLatLng = new L.LatLng(location[0], location[1]);
+      mapRef.current.setView(newLatLng, 13);
+      markerRef.current.setLatLng(newLatLng);
     }
-  }, [location]);
+  }, [location]); // Re-run when location changes
 
   return (
     <Card>
