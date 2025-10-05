@@ -70,23 +70,20 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-12">
-      <header className="text-center mb-6">
-        <div className="inline-block bg-primary/20 p-1 rounded-full mb-2">
-            <CloudDrizzle className="h-6 w-6 text-primary" />
-        </div>
-        <h1 className="text-xl md:text-2xl font-bold font-headline tracking-tight">
+      <header className="text-center mb-4">
+        <h1 className="text-lg md:text-xl font-bold font-headline tracking-tight">
           Outdoor Event Forecaster
         </h1>
-        <p className="mt-1 max-w-xl mx-auto text-xs text-muted-foreground">
-          Plan your perfect day out. Enter your event details to get an AI-powered weather forecast and condition likelihood analysis.
+        <p className="mt-1 max-w-lg mx-auto text-xs text-muted-foreground">
+          Plan your perfect day out. Get an AI-powered weather forecast.
         </p>
       </header>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-3">
+      <div className="grid grid-cols-1 gap-8">
+        <div className="order-1">
             <ForecasterForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
-        <div className="lg:col-span-3">
+        <div className="order-2">
           {isLoading && <LoadingSkeleton />}
           
           <div style={{ display: forecast && !isLoading ? 'block' : 'none' }}>
