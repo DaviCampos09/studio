@@ -44,7 +44,8 @@ export function MapDisplay({ location }: MapDisplayProps) {
       
       const goesInfrared = L.tileLayer('https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/goes-ir-4km-900913/{z}/{x}/{y}.png', {
         attribution: 'GOES Imagery from Iowa Environmental Mesonet',
-        opacity: 0.7
+        opacity: 0.7,
+        tms: true,
       });
 
       layersRef.current = {
