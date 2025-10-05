@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon, Loader2, Thermometer, Droplets, Wind, Settings2, MapPin, Info } from "lucide-react";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import React from 'react';
 
 import { Button } from "@/components/ui/button";
@@ -124,8 +124,7 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                             selected={field.value}
                             onSelect={field.onChange}
                             disabled={(date) =>
-                                date < new Date(new Date().setHours(0, 0, 0, 0)) ||
-                                date > addDays(new Date(), 14)
+                                date < new Date(new Date().setHours(0, 0, 0, 0))
                               }
                             initialFocus
                           />

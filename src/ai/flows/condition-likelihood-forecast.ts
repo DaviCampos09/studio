@@ -29,6 +29,7 @@ const ConditionLikelihoodForecastInputSchema = z.object({
     })
     .optional()
     .describe('Customizable thresholds for personal comfort.'),
+  analysisType: z.enum(['realtime', 'historical']).describe("The type of analysis being performed: 'realtime' for current forecasts or 'historical' for long-range predictions based on past data."),
 });
 
 
@@ -62,16 +63,23 @@ export type ConditionLikelihoodForecastOutput = z.infer<
 export async function conditionLikelihoodForecast(
   input: ConditionLikelihoodForecastInput
 ): Promise<ConditionLikelihoodForecastOutput> {
-  return conditionLikelihoodForecastFlow(input);
+  const result = await conditionLikelihoodForecastFlow(input);
+  // Ensure the original currentWeather data is passed through.
+  return { ...result, currentWeather: input.currentWeather };
 }
 
 const prompt = ai.definePrompt({
   name: 'conditionLikelihoodForecastPrompt',
   input: {schema: ConditionLikelihoodForecastInputSchema},
-  output: {schema: ConditionLikelihoodForecastOutputSchema},
+  output: {schema: z.object({
+      conditionLikelihoods: ConditionLikelihoodForecastOutputSchema.shape.conditionLikelihoods,
+      detailedReport: ConditionLikelihoodForecastOutputSchema.shape.detailedReport
+    })
+  },
   prompt: `You are an AI assistant specialized in interpreting weather data to forecast condition likelihoods for events. Your tone should be friendly and casual.
 
-You will receive specific weather data for a location and time. Using this data, you must determine the likelihood (from 0.0 to 1.0) of the following adverse conditions: "very hot", "very cold", "very windy", and "very humid".
+You will receive weather data for a location and time. This data is either a 'realtime' forecast or a 'historical' average.
+Using this data, you must determine the likelihood (from 0.0 to 1.0) of the following adverse conditions: "very hot", "very cold", "very windy", and "very humid".
 
 You must use a strict linear interpolation formula for your calculations. The formula is: score = (current_value - start_value) / (end_value - start_value).
 
@@ -82,17 +90,22 @@ Here are the ranges for each condition:
 - "veryHumid": Starts at 0% (score 0.0) and reaches its maximum at 90% (score 1.0).
 - Scores must be clamped between 0.0 and 1.0.
 
-Additionally, you must calculate a general "uncomfortable" likelihood score. If comfort thresholds are provided, the "uncomfortable" score should be high if the weather conditions exceed the user's specified limits. If no thresholds are provided, make a reasonable judgment based on a combination of the other scores.
+Additionally, you must calculate a general "uncomfortable" likelihood score. If comfort thresholds are provided, the "uncomfortable" score must be very high (close to 1.0) if the weather conditions exceed the user's specified limits. If no thresholds are provided, make a reasonable judgment based on a combination of the other scores.
 
-Finally, generate a "detailed report" with a friendly and casual tone. This report should summarize the key weather metrics (temperature, humidity, wind speed) and then provide a personalized comment that connects these conditions to the user's event, based on the 'eventDetails' provided. For example, if 'eventDetails' mentions an "outdoor wedding" and the forecast is windy, you might add a lighthearted comment about securing hats or decorations. Mention the location's coordinates (latitude: {{{latitude}}}, longitude: {{{longitude}}}).
+Finally, generate a "detailed report".
+- Start by stating whether the analysis is based on a 'realtime' forecast or 'historical' data averages.
+- Summarize the key weather metrics (temperature, humidity, wind speed).
+- Provide a personalized comment that connects these conditions to the user's event, based on the 'eventDetails' provided. For example, if 'eventDetails' mentions an "outdoor wedding" and the forecast is windy, you might add a lighthearted comment about securing hats or decorations.
+- Mention the location's coordinates (latitude: {{{latitude}}}, longitude: {{{longitude}}}).
 
 Input Data:
+- Analysis Type: {{{analysisType}}}
 - Latitude: {{{latitude}}}
 - Longitude: {{{longitude}}}
 - Date/Time: {{{dateTime}}}
 - Event Details: {{{eventDetails}}}
 - Comfort Thresholds: {{{json comfortThresholds}}}
-- Current Weather for the event:
+- Weather Data:
 \`\`\`json
 {{{json currentWeather}}}
 \`\`\`
@@ -109,6 +122,9 @@ const conditionLikelihoodForecastFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    return {
+      ...output!,
+      currentWeather: input.currentWeather,
+    };
   }
 );
