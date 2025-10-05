@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getForecast } from "@/app/actions";
 import { ForecasterForm } from "@/components/forecaster-form";
@@ -16,6 +16,13 @@ export default function Home() {
   const [forecast, setForecast] = useState<ConditionLikelihoodForecastOutput | null>(null);
   const [locationCoords, setLocationCoords] = useState<[number, number] | null>(null);
   const { toast } = useToast();
+  const forecastRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (forecast && forecastRef.current) {
+      forecastRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [forecast]);
 
   const handleFormSubmit = async (data: ForecasterSchema) => {
     setIsLoading(true);
@@ -43,31 +50,31 @@ export default function Home() {
   
   const LoadingSkeleton = () => (
     <div className="space-y-4">
-      <div className="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-        <Skeleton className="h-6 w-1/2" />
-        <Skeleton className="h-4 w-3/4" />
-        <div className="space-y-4 pt-4">
+      <div className="space-y-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+        <Skeleton className="h-5 w-1/2" />
+        <Skeleton className="h-3 w-3/4" />
+        <div className="space-y-3 pt-3">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="space-y-2">
               <div className="flex justify-between">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-5 w-12" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-10" />
               </div>
-              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-3 w-full" />
             </div>
           ))}
         </div>
       </div>
-      <div className="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-          <Skeleton className="h-6 w-1/2" />
-          <Skeleton className="h-48 w-full" />
+      <div className="space-y-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+          <Skeleton className="h-5 w-1/2" />
+          <Skeleton className="h-40 w-full" />
       </div>
     </div>
   );
 
   return (
-    <main className="container mx-auto px-4 py-6 md:py-8">
-      <header className="text-center mb-2">
+    <main className="container mx-auto px-4 py-4 md:py-6">
+      <header className="text-center mb-4">
         <h1 className="text-base font-bold font-headline tracking-tight">
           Outdoor Event Forecaster
         </h1>
@@ -76,11 +83,11 @@ export default function Home() {
         </p>
       </header>
       
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-6">
         <div>
             <ForecasterForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
-        <div>
+        <div ref={forecastRef}>
           {isLoading && <LoadingSkeleton />}
           
           <div style={{ display: forecast && !isLoading ? 'block' : 'none' }}>
@@ -88,10 +95,10 @@ export default function Home() {
           </div>
 
           {!isLoading && !forecast && (
-            <div className="flex flex-col items-center justify-center text-center h-full min-h-[300px] bg-card rounded-lg border border-dashed p-8">
-              <CloudDrizzle className="h-10 w-10 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold font-headline">Your forecast awaits</h3>
-              <p className="text-muted-foreground mt-1 text-sm">
+            <div className="flex flex-col items-center justify-center text-center h-full min-h-[250px] bg-card rounded-lg border border-dashed p-6">
+              <CloudDrizzle className="h-8 w-8 text-muted-foreground mb-3" />
+              <h3 className="text-base font-semibold font-headline">Your forecast awaits</h3>
+              <p className="text-muted-foreground mt-1 text-xs">
                 Fill out the form to see your personalized weather outlook.
               </p>
             </div>
