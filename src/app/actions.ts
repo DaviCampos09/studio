@@ -5,7 +5,7 @@ import {
   type ConditionLikelihoodForecastInput,
 } from '@/ai/flows/condition-likelihood-forecast';
 import type { ForecasterSchema } from '@/lib/schemas';
-import { addDays, differenceInDays } from 'date-fns';
+import { differenceInDays, formatISO } from 'date-fns';
 
 async function geocodeLocation(location: string): Promise<{ lat: number; lon: number; name: string } | null> {
   try {
@@ -36,9 +36,10 @@ async function geocodeLocation(location: string): Promise<{ lat: number; lon: nu
 
 async function getRealtimeForecast(geocoded: { lat: number; lon: number }, date: Date, time: string) {
     const [hours, minutes] = time.split(':').map(Number);
-    date.setHours(hours, minutes);
+    const eventDate = new Date(date);
+    eventDate.setHours(hours, minutes);
 
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = eventDate.toISOString().split('T')[0];
     const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${geocoded.lat}&longitude=${geocoded.lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&start_date=${dateString}&end_date=${dateString}`;
 
     const weatherResponse = await fetch(weatherApiUrl);
@@ -48,7 +49,7 @@ async function getRealtimeForecast(geocoded: { lat: number; lon: number }, date:
         throw new Error(`Failed to fetch weather data from Open-Meteo. The selected date might be out of the forecast range (up to 14 days). Please select a closer date.`);
     }
     const weatherData = await weatherResponse.json();
-    const hourIndex = date.getHours();
+    const hourIndex = eventDate.getHours();
 
     const temperature = weatherData?.hourly?.temperature_2m?.[hourIndex];
     const humidity = weatherData?.hourly?.relative_humidity_2m?.[hourIndex];
@@ -114,7 +115,7 @@ export async function getForecast(data: ForecasterSchema) {
 
     const eventDateTime = new Date(date);
     const [hours, minutes] = time.split(':').map(Number);
-    eventDateTime.setHours(hours, minutes);
+    eventDateTime.setHours(hours, minutes, 0, 0);
     
     const isFutureDate = differenceInDays(eventDateTime, new Date()) > 14;
     
@@ -128,7 +129,7 @@ export async function getForecast(data: ForecasterSchema) {
     const input: ConditionLikelihoodForecastInput = {
       latitude: geocoded.lat,
       longitude: geocoded.lon,
-      dateTime: eventDateTime.toISOString(),
+      dateTime: formatISO(eventDateTime),
       eventDetails: eventDetails,
       currentWeather: {
         temperature: weatherData.temperature,
