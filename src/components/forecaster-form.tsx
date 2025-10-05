@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,12 +46,12 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="font-headline">Event Details</CardTitle>
+      <CardHeader className="p-4">
+        <CardTitle className="font-headline text-xl">Event Details</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -82,6 +83,7 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                       <Textarea
                         placeholder="e.g., Wedding in an open-air tent, outdoor concert, indoor conference..."
                         {...field}
+                        rows={2}
                       />
                     </FormControl>
                      <FormDescription>
@@ -153,7 +155,7 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
 
             <Collapsible>
               <CollapsibleTrigger asChild>
-                <Button variant="link" className="p-0 text-accent-foreground/80 hover:text-accent-foreground">
+                <Button variant="link" className="p-0 text-sm text-accent-foreground/80 hover:text-accent-foreground">
                   <Settings2 className="mr-2 h-4 w-4" />
                   Customize Comfort Thresholds (Optional)
                 </Button>
