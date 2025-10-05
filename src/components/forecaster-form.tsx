@@ -3,7 +3,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Loader2, Thermometer, Droplets, Wind, Settings2, MapPin, Info } from "lucide-react";
+import { CalendarIcon, Loader2, Thermometer, Droplets, Wind, Settings2, MapPin, Info, Clock } from "lucide-react";
 import { format } from "date-fns";
 import React from 'react';
 
@@ -53,7 +53,7 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
             <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <FormField
                   control={form.control}
                   name="location"
@@ -64,43 +64,22 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                         Location
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., New York, NY or Eiffel Tower" {...field} />
+                        <Input placeholder="e.g., New York, NY" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="eventDetails"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center">
-                        <Info className="mr-2 h-4 w-4 text-muted-foreground" />
-                        Event Details
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="e.g., Outdoor concert, indoor conference..."
-                          {...field}
-                          rows={1}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Date</FormLabel>
+                      <FormLabel className="flex items-center">
+                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        Date
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -142,7 +121,10 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                   name="time"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Time (24h)</FormLabel>
+                      <FormLabel className="flex items-center">
+                        <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+                        Time (24h)
+                      </FormLabel>
                       <FormControl>
                         <Input type="time" {...field} />
                       </FormControl>
@@ -151,6 +133,27 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="eventDetails"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center">
+                      <Info className="mr-2 h-4 w-4 text-muted-foreground" />
+                      Event Details
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="e.g., Outdoor concert, indoor conference..."
+                        {...field}
+                        rows={1}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <Collapsible>
