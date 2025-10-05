@@ -9,7 +9,7 @@ import { ForecastDisplay } from "@/components/forecast-display";
 import type { ConditionLikelihoodForecastOutput } from "@/ai/flows/condition-likelihood-forecast";
 import type { ForecasterSchema } from "@/lib/schemas";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CloudDrizzle, MapPin } from "lucide-react";
+import { CloudDrizzle } from "lucide-react";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +42,7 @@ export default function Home() {
   };
   
   const LoadingSkeleton = () => (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
         <Skeleton className="h-6 w-1/2" />
         <Skeleton className="h-4 w-3/4" />
@@ -66,9 +66,9 @@ export default function Home() {
   );
 
   return (
-    <main className="container mx-auto px-4 py-8 md:py-12">
+    <main className="container mx-auto px-4 py-6 md:py-8">
       <header className="text-center mb-2">
-        <h1 className="text-lg md:text-xl font-bold font-headline tracking-tight">
+        <h1 className="text-base font-bold font-headline tracking-tight">
           Outdoor Event Forecaster
         </h1>
         <p className="mt-1 max-w-lg mx-auto text-xs text-muted-foreground">
@@ -76,11 +76,11 @@ export default function Home() {
         </p>
       </header>
       
-      <div className="grid grid-cols-1 gap-8">
-        <div className="lg:order-first">
+      <div className="grid grid-cols-1 gap-4">
+        <div>
             <ForecasterForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
-        <div className="lg:order-last">
+        <div>
           {isLoading && <LoadingSkeleton />}
           
           <div style={{ display: forecast && !isLoading ? 'block' : 'none' }}>
@@ -88,12 +88,10 @@ export default function Home() {
           </div>
 
           {!isLoading && !forecast && (
-            <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px] bg-card rounded-lg border border-dashed p-8">
-              <div className="p-4 bg-secondary rounded-full mb-4">
-                <CloudDrizzle className="h-12 w-12 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold font-headline">Your forecast awaits</h3>
-              <p className="text-muted-foreground mt-2">
+            <div className="flex flex-col items-center justify-center text-center h-full min-h-[300px] bg-card rounded-lg border border-dashed p-8">
+              <CloudDrizzle className="h-10 w-10 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold font-headline">Your forecast awaits</h3>
+              <p className="text-muted-foreground mt-1 text-sm">
                 Fill out the form to see your personalized weather outlook.
               </p>
             </div>

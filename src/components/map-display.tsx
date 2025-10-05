@@ -118,7 +118,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-64 w-full rounded-lg overflow-hidden z-0" ref={mapContainerRef} />
+        <div className="h-56 w-full rounded-lg overflow-hidden z-0" ref={mapContainerRef} />
       </CardContent>
     </Card>
   );
