@@ -45,7 +45,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
                 zoom={13} 
                 scrollWheelZoom={false} 
                 style={{ height: '100%', width: '100%' }}
-                whenCreated={setMap}
+                whenReady={setMap}
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
