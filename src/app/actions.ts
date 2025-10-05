@@ -154,7 +154,7 @@ export async function getForecast(data: ForecasterSchema) {
     }
     
     const result = await conditionLikelihoodForecast(input);
-    return { success: true, data: result, location: `${geocoded.lat}, ${geocoded.lon}`, displayName: geocoded.name };
+    return { success: true, data: result, location: `${geocoded.lat}, ${geocoded.lon}` };
   } catch (error) {
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to get forecast. Please try again.';

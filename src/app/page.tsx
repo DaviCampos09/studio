@@ -14,21 +14,18 @@ import { CloudDrizzle, MapPin } from "lucide-react";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [forecast, setForecast] = useState<ConditionLikelihoodForecastOutput | null>(null);
-  const [locationName, setLocationName] = useState<string | null>(null);
   const [locationCoords, setLocationCoords] = useState<[number, number] | null>(null);
   const { toast } = useToast();
 
   const handleFormSubmit = async (data: ForecasterSchema) => {
     setIsLoading(true);
     setForecast(null);
-    setLocationName(null);
     setLocationCoords(null);
 
     const result = await getForecast(data);
 
     if (result.success && result.data) {
       setForecast(result.data);
-      setLocationName(result.displayName ?? null);
       if (result.location) {
         const [lat, lon] = result.location.split(',').map(Number);
         setLocationCoords([lat, lon]);
@@ -70,7 +67,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-12">
-      <header className="text-center mb-4">
+      <header className="text-center mb-2">
         <h1 className="text-lg md:text-xl font-bold font-headline tracking-tight">
           Outdoor Event Forecaster
         </h1>
@@ -80,19 +77,13 @@ export default function Home() {
       </header>
       
       <div className="grid grid-cols-1 gap-8">
-        <div className="order-1">
+        <div className="lg:order-first">
             <ForecasterForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
-        <div className="order-2">
+        <div className="lg:order-last">
           {isLoading && <LoadingSkeleton />}
           
           <div style={{ display: forecast && !isLoading ? 'block' : 'none' }}>
-             {locationName && (
-                  <div className="mb-4 flex items-center text-sm text-muted-foreground bg-card border rounded-lg p-3">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Showing forecast for: <span className="font-semibold ml-1">{locationName}</span>
-                  </div>
-              )}
             <ForecastDisplay forecast={forecast} location={locationCoords} />
           </div>
 
