@@ -14,18 +14,24 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [forecast, setForecast] = useState<ConditionLikelihoodForecastOutput | null>(null);
   const [locationName, setLocationName] = useState<string | null>(null);
+  const [locationCoords, setLocationCoords] = useState<[number, number] | null>(null);
   const { toast } = useToast();
 
   const handleFormSubmit = async (data: ForecasterSchema) => {
     setIsLoading(true);
     setForecast(null);
     setLocationName(null);
+    setLocationCoords(null);
 
     const result = await getForecast(data);
 
     if (result.success && result.data) {
       setForecast(result.data);
       setLocationName(result.displayName ?? null);
+      if (result.location) {
+        const [lat, lon] = result.location.split(',').map(Number);
+        setLocationCoords([lat, lon]);
+      }
     } else {
       toast({
         variant: "destructive",
@@ -89,7 +95,7 @@ export default function Home() {
                       Showing forecast for: <span className="font-semibold ml-1">{locationName}</span>
                   </div>
               )}
-              <ForecastDisplay forecast={forecast} />
+              <ForecastDisplay forecast={forecast} location={locationCoords} />
             </>
           )}
           {!isLoading && !forecast && (
