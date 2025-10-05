@@ -47,52 +47,52 @@ export function ForecasterForm({ onFormSubmit, isLoading }: ForecasterFormProps)
   return (
     <Card className="w-full">
       <CardHeader className="p-4">
-        <CardTitle className="font-headline text-xl">Event Details</CardTitle>
+        <CardTitle className="font-headline text-lg">Event Details</CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-4 pt-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
             <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center">
-                      <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                      Location
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., New York, NY or Eiffel Tower" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
+                        Location
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., New York, NY or Eiffel Tower" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="eventDetails"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center">
-                      <Info className="mr-2 h-4 w-4 text-muted-foreground" />
-                      Event Details
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="e.g., Wedding in an open-air tent, outdoor concert, indoor conference..."
-                        {...field}
-                        rows={2}
-                      />
-                    </FormControl>
-                     <FormDescription>
-                      Is the event in an open or closed space? Any details can help.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="eventDetails"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        <Info className="mr-2 h-4 w-4 text-muted-foreground" />
+                        Event Details
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., Outdoor concert, indoor conference..."
+                          {...field}
+                          rows={1}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
