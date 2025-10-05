@@ -7,7 +7,7 @@ import type { ConditionLikelihoodForecastOutput } from "@/ai/flows/condition-lik
 import React from "react";
 import dynamic from 'next/dynamic';
 import { Skeleton } from "./ui/skeleton";
-import { Separator } from "./ui/separator";
+import { DetailedReport } from "./detailed-report";
 
 // Dynamically import MapDisplay only on the client side
 const MapDisplay = dynamic(() => import('./map-display').then(mod => mod.MapDisplay), {
@@ -19,6 +19,7 @@ type Likelihoods = ConditionLikelihoodForecastOutput['conditionLikelihoods'];
 
 interface LikelihoodScoresProps {
   likelihoods: Likelihoods;
+  report: string;
   location: [number, number] | null;
 }
 
@@ -30,13 +31,13 @@ const scoreConfig: { [key in keyof Likelihoods]: { label: string; icon: React.El
   uncomfortable: { label: "Uncomfortable", icon: Frown, color: "bg-chart-5" },
 };
 
-export function LikelihoodScores({ likelihoods, location }: LikelihoodScoresProps) {
+export function LikelihoodScores({ likelihoods, report, location }: LikelihoodScoresProps) {
     const sortedLikelihoods = (Object.keys(likelihoods) as Array<keyof Likelihoods>).sort((a, b) => likelihoods[b] - likelihoods[a]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-headline">Condition Likelihood</CardTitle>
+        <CardTitle className="font-headline">Forecast Summary</CardTitle>
         <CardDescription>Based on historical data and forecast models.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -63,6 +64,9 @@ export function LikelihoodScores({ likelihoods, location }: LikelihoodScoresProp
           </div>
           <div className="md:col-span-1">
             {location && <MapDisplay location={location} />}
+          </div>
+          <div className="md:col-span-1">
+            <DetailedReport report={report} />
           </div>
         </div>
       </CardContent>
