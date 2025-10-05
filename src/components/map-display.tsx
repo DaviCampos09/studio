@@ -46,7 +46,6 @@ export function MapDisplay({ location }: MapDisplayProps) {
         'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/goes-ir-4km-900913/{z}/{x}/{y}.png',
         {
           attribution: 'GOES Imagery &copy; Iowa State University',
-          opacity: 0.7,
           tms: true // Crucial for correct y-axis rendering
         }
       );
