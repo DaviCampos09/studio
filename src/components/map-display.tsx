@@ -41,30 +41,10 @@ export function MapDisplay({ location }: MapDisplayProps) {
           attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }
       );
-      
-      const nasaBaseUrl = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best';
-      
-      const addNASALayer = (layerName: string) => {
-          return L.tileLayer(`${nasaBaseUrl}/${layerName}/default/default/EPSG3857_500m/{z}/{y}/{x}.png`, {
-            attribution: 'NASA GIBS',
-            opacity: 0.7,
-            maxNativeZoom: 8
-        });
-      };
-
-      const gpm = addNASALayer('GPM_3IMERGHHE_Precipitation');
-      const smap = addNASALayer('SMAP_L3_SM_P_E_Soil_Moisture');
-      const grace = addNASALayer('GRACE_LND_SRF_WSC_RL06_MASCON_V2_CRI');
-      const geos5 = addNASALayer('GEOS-5_Precipitation_Rate_Surface');
-      
 
       layersRef.current = {
         "Streets": streets,
         "Satellite": satellite,
-        "GPM (Precipitation)": gpm,
-        "SMAP (Soil Moisture)": smap,
-        "GRACE (Water Storage)": grace,
-        "GEOS-5 (Precipitation)": geos5,
       };
 
       const map = L.map(mapContainerRef.current, {
