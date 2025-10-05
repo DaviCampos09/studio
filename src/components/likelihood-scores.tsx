@@ -61,7 +61,7 @@ export function LikelihoodScores({ likelihoods, location }: LikelihoodScoresProp
               );
             })}
           </div>
-          <div className="md:col-span-2">
+          <div className="md:col-span-1">
             {location && <MapDisplay location={location} />}
           </div>
         </div>
