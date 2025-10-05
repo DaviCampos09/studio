@@ -41,23 +41,33 @@ export function MapDisplay({ location }: MapDisplayProps) {
         }
       );
       
-      const inpeCbers4aMux = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+      const wmsUrl = 'http://terrabrasilis.dpi.inpe.br/geoserver/wms';
+      
+      const inpeCbers4aMux = L.tileLayer.wms(wmsUrl, {
         layers: 'cbers4a-mux',
+        format: 'image/png',
+        transparent: true,
         attribution: 'INPE'
       });
       
-      const inpeCbers4Mux = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+      const inpeCbers4Mux = L.tileLayer.wms(wmsUrl, {
         layers: 'cbers4-mux',
+        format: 'image/png',
+        transparent: true,
         attribution: 'INPE'
       });
       
-      const inpeCbers4Wfi = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+      const inpeCbers4Wfi = L.tileLayer.wms(wmsUrl, {
         layers: 'cbers4-wfi',
+        format: 'image/png',
+        transparent: true,
         attribution: 'INPE'
       });
       
-      const inpeSentinel2 = L.tileLayer.wms('http://terrabrasilis.dpi.inpe.br/geoserver/wms', {
+      const inpeSentinel2 = L.tileLayer.wms(wmsUrl, {
         layers: 's2-l4-bands-rgb',
+        format: 'image/png',
+        transparent: true,
         attribution: 'INPE'
       });
 
