@@ -42,21 +42,6 @@ export function MapDisplay({ location }: MapDisplayProps) {
           attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }
       );
-      
-      const sentinel = L.tileLayer(
-          'https://services.sentinel-hub.com/ogc/wms/bd86bcc0-02d1-4474-9164-39a04a43452b?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=TRUE_COLOR&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}',
-          {
-              attribution: 'Sentinel-2 data from <a href="https://www.sentinel-hub.com/" target="_blank">Sentinel Hub</a>'
-          }
-      );
-
-      const landsat = L.tileLayer(
-          'https://landsat.arcgis.com/arcgis/rest/services/Landsat/LS_2016/ImageServer/tile/{z}/{y}/{x}',
-          {
-              attribution: 'Landsat 8 data from <a href="https://www.arcgis.com/" target="_blank">ArcGIS</a>'
-          }
-      );
-
 
       const map = L.map(mapContainerRef.current, {
         center: location,
@@ -67,9 +52,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
       
       const baseMaps = {
         "Streets": streets,
-        "Satellite": satellite,
-        "Sentinel-2": sentinel,
-        "Landsat 8": landsat
+        "Satellite": satellite
       };
 
       L.control.layers(baseMaps).addTo(map);
