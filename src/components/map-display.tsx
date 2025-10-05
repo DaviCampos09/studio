@@ -30,11 +30,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
       map.setView(location, 13);
     }
   }, [location, map]);
-  
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  
+
   return (
     <Card>
       <CardHeader>
