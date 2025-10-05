@@ -41,7 +41,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
         }
       );
       
-      const wmsUrl = 'http://terrabrasilis.dpi.inpe.br/geoserver/wms';
+      const wmsUrl = 'https://terrabrasilis.dpi.inpe.br/geoserver/wms';
       
       const inpeCbers4aMux = L.tileLayer.wms(wmsUrl, {
         layers: 'cbers4a-mux',
