@@ -40,7 +40,6 @@ export function MapDisplay({ location, map, setMap }: MapDisplayProps) {
       </CardHeader>
       <CardContent>
         <div className="h-64 w-full rounded-lg overflow-hidden z-0">
-          {!map && (
              <MapContainer 
                 center={location} 
                 zoom={13} 
@@ -58,10 +57,6 @@ export function MapDisplay({ location, map, setMap }: MapDisplayProps) {
                     </Popup>
                 </Marker>
             </MapContainer>
-          )}
-          {map && (
-             <div id="map" style={{ height: '100%', width: '100%' }} />
-          )}
         </div>
       </CardContent>
     </Card>
