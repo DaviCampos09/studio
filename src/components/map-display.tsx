@@ -24,7 +24,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<LeafletMarker | null>(null);
-  const layersRef = useRef<{ [key: string]: TileLayer }>({});
+  const layersRef = useRef<{ [key: string]: TileLayer | L.LayerGroup }>({});
 
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
@@ -42,16 +42,29 @@ export function MapDisplay({ location }: MapDisplayProps) {
         }
       );
       
-      const goesInfrared = L.tileLayer('https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/goes-ir-4km-900913/{z}/{x}/{y}.png', {
-        attribution: 'GOES Imagery from Iowa Environmental Mesonet',
-        opacity: 0.7,
-        tms: true,
-      });
+      const nasaBaseUrl = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best';
+      
+      const addNASALayer = (layerName: string) => {
+          return L.tileLayer(`${nasaBaseUrl}/${layerName}/default/default/EPSG3857_500m/{z}/{y}/{x}.png`, {
+            attribution: 'NASA GIBS',
+            opacity: 0.7,
+            maxNativeZoom: 8
+        });
+      };
+
+      const gpm = addNASALayer('GPM_3IMERGHHE_Precipitation');
+      const smap = addNASALayer('SMAP_L3_SM_P_E_Soil_Moisture');
+      const grace = addNASALayer('GRACE_LND_SRF_WSC_RL06_MASCON_V2_CRI');
+      const geos5 = addNASAL_Layer('GEOS-5_Precipitation_Rate_Surface');
+      
 
       layersRef.current = {
         "Streets": streets,
         "Satellite": satellite,
-        "GOES (Infrared)": goesInfrared,
+        "GPM (Precipitation)": gpm,
+        "SMAP (Soil Moisture)": smap,
+        "GRACE (Water Storage)": grace,
+        "GEOS-5 (Precipitation)": geos5,
       };
 
       const map = L.map(mapContainerRef.current, {
@@ -99,4 +112,8 @@ export function MapDisplay({ location }: MapDisplayProps) {
       </CardContent>
     </Card>
   );
+}
+
+function addNASAL_Layer(layerName: string): L.TileLayer {
+    throw new Error('Function not implemented.');
 }
