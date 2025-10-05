@@ -2,9 +2,10 @@
 
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Icon } from 'leaflet';
+import { Icon, type Map as LeafletMap } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 // Custom icon for the map marker
 const customIcon = new Icon({
@@ -22,10 +23,18 @@ interface MapDisplayProps {
 }
 
 export function MapDisplay({ location }: MapDisplayProps) {
+  const [map, setMap] = useState<LeafletMap | null>(null);
+
+  useEffect(() => {
+    if (map) {
+      map.setView(location, 13);
+    }
+  }, [location, map]);
+  
   if (typeof window === 'undefined') {
     return null;
   }
-
+  
   return (
     <Card>
       <CardHeader>
@@ -35,7 +44,13 @@ export function MapDisplay({ location }: MapDisplayProps) {
       </CardHeader>
       <CardContent>
         <div className="h-64 w-full rounded-lg overflow-hidden z-0">
-            <MapContainer center={location} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+            <MapContainer 
+                center={location} 
+                zoom={13} 
+                scrollWheelZoom={false} 
+                style={{ height: '100%', width: '100%' }}
+                whenCreated={setMap}
+            >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
