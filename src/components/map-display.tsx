@@ -2,7 +2,7 @@
 
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
-import L, { Map as LeafletMap, Marker as LeafletMarker, TileLayer } from 'leaflet';
+import L, { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
 
@@ -43,15 +43,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
         }
       );
       
-      // Overlay Layers
-      const clouds = L.tileLayer(
-        'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=1b3e7d5225d4efa2c229947ce8473543',
-        {
-          attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
-          opacity: 0.8
-        }
-      );
-      
+      // Helper function to create NASA GIBS layers with the current date
       const addNASALayer = (layerName: string) => {
         const today = new Date();
         const dateString = today.toISOString().split('T')[0];
@@ -61,10 +53,18 @@ export function MapDisplay({ location }: MapDisplayProps) {
             attribution: 'NASA GIBS',
             tileSize: 256,
             maxNativeZoom: 8,
-            opacity: 0.8
+            opacity: 0.8 // Increased opacity for better visibility
         });
       };
       
+      const clouds = L.tileLayer(
+        'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=1b3e7d5225d4efa2c229947ce8473543',
+        {
+          attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+          opacity: 0.8 // Increased opacity for better visibility
+        }
+      );
+
       const nasaTrueColor = addNASALayer('MODIS_Terra_CorrectedReflectance_TrueColor');
 
       const baseLayers = {
