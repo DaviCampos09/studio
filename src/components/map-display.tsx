@@ -67,27 +67,6 @@ export function MapDisplay({ location }: MapDisplayProps) {
 
       const nasaTrueColor = addNASALayer('MODIS_Terra_CorrectedReflectance_TrueColor');
 
-      const cbers4a_mux = L.tileLayer(
-        'http://brazildatacube.dpi.inpe.br/bdc/geoserver/gwc/service/wmts?layer=bdc:CB4A_64_16D_STK_v1&tilematrixset=EPSG:3857&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:3857:{z}&TileCol={x}&TileRow={y}', 
-        { attribution: 'INPE/Brasil Data Cube' }
-      );
-
-      const cbers4_mux = L.tileLayer(
-        'http://brazildatacube.dpi.inpe.br/bdc/geoserver/gwc/service/wmts?layer=bdc:CB4_64_16D_STK_v1&tilematrixset=EPSG:3857&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:3857:{z}&TileCol={x}&TileRow={y}', 
-        { attribution: 'INPE/Brasil Data Cube' }
-      );
-      
-      const cbers4_wfi = L.tileLayer(
-        'http://brazildatacube.dpi.inpe.br/bdc/geoserver/gwc/service/wmts?layer=bdc:CB4_64_16D_STK_v1&tilematrixset=EPSG:3857&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:3857:{z}&TileCol={x}&TileRow={y}',
-        { attribution: 'INPE/Brasil Data Cube' }
-      );
-
-      const sentinel2 = L.tileLayer(
-        'http://brazildatacube.dpi.inpe.br/bdc/geoserver/gwc/service/wmts?layer=bdc:S2_10_16D_STK_v1&tilematrixset=EPSG:3857&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:3857:{z}&TileCol={x}&TileRow={y}',
-        { attribution: 'INPE/Brasil Data Cube' }
-      );
-
-
       const baseLayers = {
         "Streets": streets,
         "Satellite": satellite
@@ -95,11 +74,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
       
       const overlayLayers = {
           "NASA (True Color)": nasaTrueColor,
-          "Clouds": clouds,
-          "CBERS-4A MUX": cbers4a_mux,
-          "CBERS-4 MUX": cbers4_mux,
-          "CBERS-4 WFI": cbers4_wfi,
-          "Sentinel-2": sentinel2,
+          "Clouds": clouds
       };
 
       const map = L.map(mapContainerRef.current, {
@@ -145,5 +120,3 @@ export function MapDisplay({ location }: MapDisplayProps) {
     </>
   );
 }
-
-    
