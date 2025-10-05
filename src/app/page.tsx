@@ -82,7 +82,7 @@ export default function Home() {
       </header>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 lg:order-first order-last">
           <ForecasterForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
         <div className="lg:col-span-2">
