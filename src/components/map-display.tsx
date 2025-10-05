@@ -75,7 +75,7 @@ export function MapDisplay({ location }: MapDisplayProps) {
         center: location,
         zoom: 13,
         scrollWheelZoom: false,
-        layers: [streets]
+        layers: [streets] // Apenas a camada de ruas é adicionada na inicialização
       });
       
       const baseMaps = {
@@ -96,16 +96,18 @@ export function MapDisplay({ location }: MapDisplayProps) {
       markerRef.current = marker;
     }
 
+    // Função de limpeza para destruir o mapa quando o componente é desmontado
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, []);
+  }, []); // O array vazio garante que este useEffect rode apenas uma vez
 
+  // Este useEffect atualiza a visão do mapa e o marcador quando a localização muda
   useEffect(() => {
-    if (mapRef.current && markerRef.current) {
+    if (mapRef.current && markerRef.current && location) {
       mapRef.current.setView(location, 13);
       markerRef.current.setLatLng(location);
     }
