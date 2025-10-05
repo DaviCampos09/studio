@@ -2,7 +2,7 @@
 
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
-import L, { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
+import L, { Map as LeafletMap, Marker as LeafletMarker, LayerGroup } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { MapPin } from 'lucide-react';
 
@@ -29,18 +29,33 @@ export function MapDisplay({ location }: MapDisplayProps) {
   useEffect(() => {
     // Initialize map only once
     if (mapContainerRef.current && !mapRef.current) {
-      const map = L.map(mapContainerRef.current, {
-        center: location,
-        zoom: 13,
-        scrollWheelZoom: false,
-      });
-      
-      L.tileLayer(
+      const streets = L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }
-      ).addTo(map);
+      );
+
+      const satellite = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        {
+          attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }
+      );
+
+      const map = L.map(mapContainerRef.current, {
+        center: location,
+        zoom: 13,
+        scrollWheelZoom: false,
+        layers: [streets] // Default layer
+      });
+      
+      const baseMaps = {
+        "Streets": streets,
+        "Satellite": satellite
+      };
+
+      L.control.layers(baseMaps).addTo(map);
 
       const marker = L.marker(location, { icon: customIcon }).addTo(map);
       marker.bindPopup('Your event location.');
