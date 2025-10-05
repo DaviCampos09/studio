@@ -89,17 +89,17 @@ export default function Home() {
         </div>
         <div className="lg:col-span-2">
           {isLoading && <LoadingSkeleton />}
-          {forecast && (
-            <>
-              {locationName && (
+          
+          <div style={{ display: forecast && !isLoading ? 'block' : 'none' }}>
+             {locationName && (
                   <div className="mb-4 flex items-center text-sm text-muted-foreground bg-card border rounded-lg p-3">
                       <MapPin className="h-4 w-4 mr-2" />
                       Showing forecast for: <span className="font-semibold ml-1">{locationName}</span>
                   </div>
               )}
-              <ForecastDisplay forecast={forecast} location={locationCoords} map={map} setMap={setMap} />
-            </>
-          )}
+            <ForecastDisplay forecast={forecast} location={locationCoords} map={map} setMap={setMap} />
+          </div>
+
           {!isLoading && !forecast && (
             <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px] bg-card rounded-lg border border-dashed p-8">
               <div className="p-4 bg-secondary rounded-full mb-4">

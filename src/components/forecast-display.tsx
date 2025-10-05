@@ -11,13 +11,17 @@ const MapDisplay = dynamic(() => import('./map-display').then(mod => mod.MapDisp
 });
 
 interface ForecastDisplayProps {
-  forecast: ConditionLikelihoodForecastOutput;
+  forecast: ConditionLikelihoodForecastOutput | null;
   location: [number, number] | null;
   map: LeafletMap | null;
   setMap: (map: LeafletMap | null) => void;
 }
 
 export function ForecastDisplay({ forecast, location, map, setMap }: ForecastDisplayProps) {
+  if (!forecast) {
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       <LikelihoodScores likelihoods={forecast.conditionLikelihoods} />
