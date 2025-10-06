@@ -1,4 +1,4 @@
-# TEMPORAN
+# TEMPOREAN
 
 Este é um aplicativo web que fornece previsões meteorológicas baseadas em IA para ajudar os usuários a planejar seus eventos ao ar livre. O aplicativo oferece previsões em tempo real para datas próximas e utiliza dados históricos para previsões de longo prazo, garantindo que você esteja sempre preparado.
 
@@ -81,4 +81,4 @@ Antes de começar, certifique-se de que você tenha o seguinte software instalad
     Abra seu navegador e acesse o seguinte endereço para ver a aplicação em funcionamento:
     [http://localhost:3000](http://localhost:3000)
 
-Agora você está pronto para usar Temporan!
+Agora você está pronto para usar Temporean!
