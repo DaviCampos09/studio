@@ -1,4 +1,4 @@
-# Outdoor Event Forecaster
+# TEMPORAN
 
 Este é um aplicativo web que fornece previsões meteorológicas baseadas em IA para ajudar os usuários a planejar seus eventos ao ar livre. O aplicativo oferece previsões em tempo real para datas próximas e utiliza dados históricos para previsões de longo prazo, garantindo que você esteja sempre preparado.
 
@@ -51,10 +51,9 @@ Antes de começar, certifique-se de que você tenha o seguinte software instalad
 1.  **Clone o Repositório**
     Abra seu terminal e clone o repositório do projeto para sua máquina local.
     ```bash
-    git clone https://github.com/seu-usuario/outdoor-event-forecaster.git
-    cd outdoor-event-forecaster
+    git clone <URL_DO_REPOSITORIO>
+    cd <NOME_DA_PASTA_DO_PROJETO>
     ```
-    *(Substitua a URL pelo link correto do seu repositório, se aplicável.)*
 
 2.  **Instale as Dependências**
     Dentro do diretório do projeto, execute o seguinte comando para instalar todas as dependências necessárias listadas no arquivo `package.json`.
@@ -82,4 +81,4 @@ Antes de começar, certifique-se de que você tenha o seguinte software instalad
     Abra seu navegador e acesse o seguinte endereço para ver a aplicação em funcionamento:
     [http://localhost:3000](http://localhost:3000)
 
-Agora você está pronto para usar e modificar o Outdoor Event Forecaster!
+Agora você está pronto para usar Temporan!
